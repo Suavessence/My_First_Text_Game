@@ -1,0 +1,165 @@
+//V.0.5.2
+#include <iostream>
+#include <random> //for rng
+
+//classes///////////////////////////////////
+class Monster
+{
+	private:
+		int m_health;
+		//int p_min_atk = 1;
+		//int p_max_atk = 4;
+	public:
+	    Monster(int h){m_health = h;}
+	    //int increase_p_min_atk();
+	    //int increase_p_max_atk();
+		void dmg_monster(int atk){m_health -= atk;}
+		void battle();
+		void m_heal();
+		void display_stats();
+};
+/*class Player
+{
+    private:
+        int p_health = 25;
+    public:
+
+};*/
+//global variables///////////////////////////////
+int p_min_atk = 1;
+int p_max_atk = 4;
+int monster_count = 0;
+int current_monster = monster_count +1;
+void increase_p_atk();
+void welcome(){std::cout << "**********************************************************************\n" << std::endl;
+               std::cout << "************************ Welcome to the game! ************************\n" << std::endl;
+               std::cout << "**********************************************************************\n" << std::endl;}
+void congrats(){std::cout << "**********************************************************************\n" << std::endl;
+                std::cout << "***************** Congrats! You have won the game!!! *****************\n" << std::endl; 
+                std::cout << "**********************************************************************\n" << std::endl;}
+//main////////////////////////
+int main()
+{
+    welcome();   
+    
+    int arr_size = 10;
+    int arr[arr_size] = {};
+    for(int i = 0; i < arr_size; i++)
+    {
+        int monster_health = (((i+2) * (i+2)) - i);
+        Monster monster(monster_health);
+        if(i > 0)
+        {
+            increase_p_atk();
+            monster.display_stats();
+        }
+        else
+        {
+            monster.display_stats();
+        }
+        monster.battle();
+    }
+
+    congrats();
+    return 0;
+}
+
+//definitions//////////////////
+//int Monster::increase_p_min_atk()
+//{
+//    p_min_atk += p_min_atk;
+//}
+//int Monster::increase_p_max_atk()
+//{
+//    p_max_atk += p_max_atk;
+//}
+void increase_p_atk()
+{
+    if (p_min_atk == 1)
+    {
+        ++p_min_atk; // sets min to 2
+    }
+    else if (p_min_atk == 2)
+    {
+        p_min_atk = (p_min_atk * p_min_atk); // sets min to 4
+    }
+    else
+    {
+        p_min_atk = ((p_min_atk * p_min_atk) - p_min_atk);
+    }
+    
+    p_max_atk = ((p_max_atk * p_max_atk) - p_max_atk);
+}
+int attack(int min_atk, int max_atk)
+{
+    //setup rng stuff///////////////
+	std::random_device dev;
+    std::mt19937 rng(dev());
+	std::uniform_int_distribution<std::mt19937::result_type> dist6(min_atk, max_atk); // distribution in range [0, 6] use: dist6(rng)
+
+    //user presses A to attack
+	char atk;
+	    
+	 do
+	 {
+	    std::cout << "\n\nPress 'A' to attack. ";
+	    std::cin.get(atk);
+	    std::cin.ignore();
+	  }
+	  while (!(atk == 'a' || atk == 'A'));
+	    
+	  //generates, prints, and returns random number for atk value
+	  int atk_value = dist6(rng);
+	  
+	  if(atk_value == max_atk){std::cout << "\nCritical strike for " << atk_value << "!";}
+	  //else if(atk_value == 0){std::cout << "\nYour attack missed...";}
+	  else {std::cout << "\nYou attack for: " << atk_value;}
+	  
+	  return atk_value;
+}
+void Monster::m_heal()
+{
+    std::random_device dev;
+    std::mt19937 rng(dev());
+	std::uniform_int_distribution<std::mt19937::result_type> dist6(0,3); // distribution in range [0, 3] use: dist6(rng)
+	
+	int heal = dist6(rng);
+	
+	if(heal == 3)
+	{
+	    m_health += 5;
+	    std::cout << "\n" << current_monster << " heals for 5";
+	}
+}
+void Monster::battle()
+{
+    std::cout << "\n---> Prepare to attack monster " << current_monster << "! (" << m_health << " health)";
+    
+    while(m_health > 0)
+    {
+	    dmg_monster(attack(p_min_atk, p_max_atk));
+	    if(m_health > 0)
+	    {
+	        m_heal();
+	    }
+	    std::cout << "\nMonster " << current_monster << " Health: " << m_health;
+    }
+
+    if(m_health <=0)
+    {
+	    std::cout << "\n\nYou killed monster " << current_monster << "!\n";
+	    monster_count++;
+	    current_monster++;
+    }
+    else //for debugging
+    {
+	    std::cout << "\n\nYou -didn't?- kill monster. Something went wrong" << monster_count << "?...";
+    }
+}
+void Monster::display_stats()
+{
+    std::cout << "\n++++++++++++++++++++++++++++++++++++++++++++++++\n";
+    std::cout << "Player attack damage: " << p_min_atk << " - " << p_max_atk << "\n";
+    std::cout << "Monsters slain:       " << monster_count;
+    std::cout << "\n++++++++++++++++++++++++++++++++++++++++++++++++\n";
+}
