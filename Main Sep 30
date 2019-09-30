@@ -12,8 +12,6 @@ class Monster
 		//int p_max_atk = 4;
 	public:
 	    Monster(int h){m_health = h;}
-	    //int increase_p_min_atk();
-	    //int increase_p_max_atk();
 		void dmg_monster(int atk){m_health -= atk;}
 		void battle();
 		void m_heal();
@@ -35,9 +33,9 @@ std::mt19937 rng(dev());
 
 void test();
 //global variables///////////////////////////////
-int p_health = 1;
-int p_min_atk = 1;
-int p_max_atk = 4;
+int p_health = 10;
+int p_min_atk = 10;
+int p_max_atk = 20;
 int monster_count = 0;
 void increase_p_atk();
 bool chance_increase_p_atk();
@@ -53,17 +51,44 @@ int main()
 {
     welcome();   
     
-    int arr_size = 4;
+    int arr_size = 3;
     int floor_1[arr_size][arr_size] = {};
     for(int i = 0; i < arr_size; i++)
     {
         for (int j = 0; j < arr_size; j++)
         {
-            int monster_health = (((j+2) * (j+2)) - j);
-            Monster monster(monster_health);
-            monster.display_stats(i, j);
-            monster.battle();
-            monster.post_battle_menu();
+            if (i == 0) 
+            {
+                int monster_health = (((j+2) * (j+2)) - j);
+                Monster monster(monster_health);
+                monster.display_stats(i, j);
+                monster.battle();
+                monster.post_battle_menu();
+            }
+            else if (i == 1) 
+            {
+                int monster_health = (((j+8) * (j+8)) - j);
+                Monster monster(monster_health);
+                monster.display_stats(i, j);
+                monster.battle();
+                monster.post_battle_menu();
+            }
+            else if (i == 2) 
+            {
+                int monster_health = (((j+16) * (j+16)) - j);
+                Monster monster(monster_health);
+                monster.display_stats(i, j);
+                monster.battle();
+                monster.post_battle_menu();
+            }
+            else 
+            {
+                int monster_health = (((j+24) * (j+24)) - j);
+                Monster monster(monster_health);
+                monster.display_stats(i, j);
+                monster.battle();
+                monster.post_battle_menu();
+            }
         }
     }
 
@@ -84,12 +109,10 @@ bool chance_increase_p_atk()
 	int chance = dist6(rng);
 	if(chance < 3)
 	{
-	    std::cout << "\nChance to increase p atk rolled: " << chance << std::endl;
 	    return false;
 	}
 	else
 	{
-	    std::cout << "\nChance to increase p atk rolled: " << chance << std::endl;
 	    return true;
 	}
 	
@@ -171,13 +194,14 @@ void Monster::battle()
 	        std::cout << "Is player dead?\n";
 	        if(!(p_health > 0))
 	        {
-	            player_death;
+	            player_death();
 	        }
 	        display_battle_stats();
 	    }
 	    else if (m_health <= 0)
 	    {
 	        monster_is_dead();
+	        display_battle_stats();
 	    }
         else //for debugging
         {
@@ -190,7 +214,7 @@ void Monster::display_stats(int level, int room)
     std::cout << "\n+++++++++++++++++++++++++++++++++++++++++++\n";
     std::cout << "Player attack damage: " << p_min_atk << " - " << p_max_atk << "\n";
     std::cout << "Player health: " << p_health << "\n";
-    std::cout << "Monsters slain:       " << monster_count << "\n";
+    std::cout << "Monsters slain: " << monster_count << "\n";
     std::cout << "Next: Floor " << level + 1 << ", Room " << room + 1 << "\n";
     std::cout << "+++++++++++++++++++++++++++++++++++++++++++\n";
 }
@@ -205,7 +229,7 @@ void Monster::display_post_battle_menu()
     std::cout << "------------------\n";
     std::cout << "------------------\n\n";
     std::cout << "Select an option:\n\n";
-    std::cout << "A: Attack\n";
+    std::cout << "P: Proceed\n";
     std::cout << "H: Heal\n\n";
     std::cout << "------------------\n";
     std::cout << "------------------\n";
@@ -219,7 +243,7 @@ char Monster::get_post_battle_menu_choice()
 	    std::cin.ignore();
 	    choice = toupper(choice);
     }
-    while(!(choice == 'A' || choice == 'H'));
+    while(!(choice == 'P' || choice == 'H'));
 
 	return choice;
 }
@@ -227,8 +251,8 @@ void Monster::execute_post_battle_menu_choice(char choice)
 {
     switch (choice)
     {
-        case 'A':
-        {   std::cout << "In switch, chose: chose A\n";
+        case 'P':
+        {
             break;
         }
         case 'H':
@@ -244,6 +268,7 @@ void Monster::execute_post_battle_menu_choice(char choice)
         }
     }   
 }
+
 void Monster::post_battle_menu()
 {
     display_post_battle_menu();
