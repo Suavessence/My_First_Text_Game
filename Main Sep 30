@@ -25,6 +25,9 @@ class Monster
 		char get_post_battle_menu_choice();
 		void execute_post_battle_menu_choice(char);
 		void post_battle_menu();
+		void is_player_dead();
+		int player_death();
+		void monster_is_dead();
 };
 //global RNG stuff
 std::random_device dev;
@@ -32,18 +35,18 @@ std::mt19937 rng(dev());
 
 void test();
 //global variables///////////////////////////////
-int p_health = 10;
+int p_health = 1;
 int p_min_atk = 1;
 int p_max_atk = 4;
 int monster_count = 0;
 void increase_p_atk();
 bool chance_increase_p_atk();
 void heal_player(int health);
-void welcome(){std::cout << "**********************************************************************\n" << std::endl;
-               std::cout << "************************ Welcome to the game! ************************\n" << std::endl;
+void welcome(){std::cout << "**********************************************************************" << std::endl;
+               std::cout << "************************ Welcome to the game! ************************" << std::endl;
                std::cout << "**********************************************************************\n" << std::endl;}
-void congrats(){std::cout << "**********************************************************************\n" << std::endl;
-                std::cout << "***************** Congrats! You have won the game!!! *****************\n" << std::endl; 
+void congrats(){std::cout << "**********************************************************************" << std::endl;
+                std::cout << "***************** Congrats! You have won the game!!! *****************" << std::endl; 
                 std::cout << "**********************************************************************\n" << std::endl;}
 //main////////////////////////////////////////////
 int main()
@@ -98,31 +101,29 @@ int attack(int min_atk, int max_atk)
 
     //user presses A to attack
 	char atk;
-	    
-	 do
-	 {
-	    std::cout << "\n\nPress 'A' to attack. ";
-	    std::cin.get(atk);
-	    std::cin.ignore();
-	  }
-	  while (!(atk == 'a' || atk == 'A'));
-	    
-	  //generates, prints, and returns random number for atk value
-	  int atk_value = dist6(rng);
-	  
-	  if(atk_value == max_atk)
-	  {
-	      std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
-	      std::cout << "Critical strike for " << atk_value << "!\n";
-	  }
-	  //else if(atk_value == 0){std::cout << "\nYour attack missed...";}
-	  else 
-	  {
-	      std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
-	      std::cout << "You attack for: " << atk_value << "\n";
-	  }
-	  
-	  return atk_value;
+	 
+	std::cout << "\n\nPress any key to attack. ";
+	std::cin.get(atk);
+
+	//generates, prints, and returns random number for atk value
+	int atk_value = dist6(rng);
+	
+	if(atk_value == max_atk)
+	{
+	    std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+	    std::cout << "You land a critical strike for " << atk_value << "!\n";
+	}
+	else if(atk_value == 0)
+	{
+	    std::cout << "Your attack missed...\n";
+	}
+	else 
+	{
+	    std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+	    std::cout << "You attack for: " << atk_value << "\n";
+	}
+	
+	return atk_value;
 }
 bool Monster::get_m_atk_chance()
 {
@@ -161,27 +162,27 @@ void Monster::battle()
     
     while(m_health > 0)
     {
-	    dmg_monster(attack(p_min_atk, p_max_atk));
+	    dmg_monster(attack(p_min_atk, p_max_atk)); //player attack, dealing dmg in amount of 'dmg_monster'
 	    if(m_health > 0)
 	    {
-	        m_heal();
-	        m_attack(get_m_atk_chance());
+	        m_heal(); //monster gets a chance to heal
+	        m_attack(get_m_atk_chance()); //monster gets a chance to attack
+	        //void is_player_dead();
+	        std::cout << "Is player dead?\n";
+	        if(!(p_health > 0))
+	        {
+	            player_death;
+	        }
+	        display_battle_stats();
 	    }
-        display_battle_stats();
-    }
-
-    if(m_health <=0)
-    {
-	    std::cout << "\n\nYou killed monster " << (monster_count + 1) << "!\n";
-	    monster_count++;
-	    if(chance_increase_p_atk())
+	    else if (m_health <= 0)
 	    {
-	        increase_p_atk();
+	        monster_is_dead();
 	    }
-    }
-    else //for debugging
-    {
-	    std::cout << "\n\nYou -didn't?- kill monster. Something went wrong" << (monster_count + 1) << "?...";
+        else //for debugging
+        {
+	        std::cout << "\n\nYou -didn't?- kill monster. Something went wrong" << (monster_count + 1) << "?...";
+        }
     }
 }
 void Monster::display_stats(int level, int room)
@@ -197,7 +198,7 @@ void Monster::display_battle_stats()
 {
     std::cout << "\nMonster " << (monster_count + 1) << " Health: " << m_health << "\n";
 	std::cout << "Player health: " << p_health << "\n";
-	std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+	std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@\n";
 }
 void Monster::display_post_battle_menu()
 {
@@ -252,4 +253,24 @@ void heal_player(int health)
 {
     p_health += health;   
 }
-
+void Monster::is_player_dead()
+{
+        if(p_health <= 0)
+    {
+        player_death();
+    }
+}
+int Monster::player_death()
+{
+    std::cout << "Congrats! You managed to get yourself killed!\n";
+    exit(1);
+}
+void Monster::monster_is_dead()
+{
+    std::cout << "\n\nYou killed monster " << (monster_count + 1) << "!\n";
+	monster_count++;
+	if(chance_increase_p_atk())
+	{
+	    increase_p_atk();
+	}
+}
