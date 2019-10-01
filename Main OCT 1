@@ -1,0 +1,313 @@
+//V.0.5.5
+#include <iostream>
+#include <random> //for rng
+#include <cctype> // for toupper()
+
+//classes///////////////////////////////////
+class Entity
+{
+	private:
+		int m_health;
+
+	public:
+	    Entity(int h){m_health = h; monster_count++;}
+	
+        static int p_health;
+        static int p_min_atk;
+        static int p_max_atk;
+        static int monster_count;
+        	
+	    static void m_attack(bool m_attacks);
+	    static void heal_player(int health);
+	    static void increase_p_atk();
+	    
+		void dmg_monster(int atk){m_health -= atk;}
+		void battle();
+		void m_heal();
+		bool get_m_atk_chance();
+		void display_stats(int level, int room);
+		void display_battle_stats();
+		void display_post_battle_menu();
+		char get_post_battle_menu_choice();
+		void execute_post_battle_menu_choice(char);
+		void post_battle_menu();
+		void is_player_dead();
+		int player_death();
+		void monster_is_dead();
+};
+//global RNG stuff///////////////////////////////
+std::random_device dev;
+std::mt19937 rng(dev());
+
+//global variables///////////////////////////////
+
+//initialization of Entity static variables
+int Entity::p_health = 10;
+int Entity::p_min_atk = 10;
+int Entity::p_max_atk = 20;
+int Entity::monster_count = 0;
+
+//prototypes////////////////////////////////////
+bool chance_increase_p_atk();
+void welcome(){std::cout << "**********************************************************************" << std::endl;
+               std::cout << "************************ Welcome to the game! ************************" << std::endl;
+               std::cout << "**********************************************************************\n" << std::endl;}
+void congrats(){std::cout << "**********************************************************************" << std::endl;
+                std::cout << "***************** Congrats! You have won the game!!! *****************" << std::endl; 
+                std::cout << "**********************************************************************\n" << std::endl;}
+                
+//main////////////////////////////////////////////
+int main()
+{
+    welcome();   
+    
+    int arr_size = 3;
+    int floor_1[arr_size][arr_size] = {};
+    for(int i = 0; i < arr_size; i++)
+    {
+        for (int j = 0; j < arr_size; j++)
+        {
+            if (i == 0) 
+            {
+                int monster_health = (((j+2) * (j+2)) - j);
+                Entity encounter(monster_health);
+                encounter.display_stats(i, j);
+                encounter.battle();
+                encounter.post_battle_menu();
+            }
+            else if (i == 1) 
+            {
+                int monster_health = (((j+8) * (j+8)) - j);
+                Entity encounter(monster_health);
+                encounter.display_stats(i, j);
+                encounter.battle();
+                encounter.post_battle_menu();
+            }
+            else if (i == 2) 
+            {
+                int monster_health = (((j+16) * (j+16)) - j);
+                Entity encounter(monster_health);
+                encounter.display_stats(i, j);
+                encounter.battle();
+                encounter.post_battle_menu();
+            }
+            else 
+            {
+                int monster_health = (((j+24) * (j+24)) - j);
+                Entity encounter(monster_health);
+                encounter.display_stats(i, j);
+                encounter.battle();
+                encounter.post_battle_menu();
+            }
+        }
+    }
+
+    congrats();
+    return 0;
+}
+//non-member definitions///////////////////////////////
+bool chance_increase_p_atk()
+{
+    //setup rng stuff///////////////
+	std::uniform_int_distribution<std::mt19937::result_type> dist6(0, 3); // distribution in range [min_atk, max_atk] use: dist6(rng)
+	int chance = dist6(rng);
+	if(chance < 3)
+	{
+	    return false;
+	}
+	else
+	{
+	    return true;
+	}
+	
+}
+int attack(int min_atk, int max_atk)
+{
+    //setup rng stuff///////////////
+	std::uniform_int_distribution<std::mt19937::result_type> dist6(min_atk, max_atk); // distribution in range [min_atk, max_atk] use: dist6(rng)
+
+    //user presses A to attack
+	char atk;
+	 
+	std::cout << "\n\nPress any key to attack. ";
+	std::cin.get(atk);
+
+	//generates, prints, and returns random number for atk value
+	int atk_value = dist6(rng);
+	
+	if(atk_value == max_atk)
+	{
+	    std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+	    std::cout << "You land a critical strike for " << atk_value << "!\n";
+	}
+	else if(atk_value == 0)
+	{
+	    std::cout << "Your attack missed...\n";
+	}
+	else 
+	{
+	    std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+	    std::cout << "You attack for: " << atk_value << "\n";
+	}
+	
+	return atk_value;
+}
+//Entity member definitions///////////////////////////////
+void Entity::increase_p_atk()
+{
+    p_min_atk = (p_min_atk * 2);
+    
+    p_max_atk = (p_max_atk * 2);
+}
+
+
+bool Entity::get_m_atk_chance()
+{
+    bool m_attacks;
+    std::uniform_int_distribution<std::mt19937::result_type> dist6(0,1); // distribution in range [0, 1] use: dist6(rng)
+    if(dist6(rng) == 1)
+    {
+        m_attacks = true;
+    }
+    return m_attacks;
+}
+void Entity::m_attack(bool m_attacks)
+{
+    if(m_attacks == true)
+    {
+        int m_atk_dmg = 2;
+        p_health -= m_atk_dmg;
+        std::cout << "Entity " << (monster_count + 1) << " attacks for " << m_atk_dmg << "!\n";
+    }
+}
+void Entity::m_heal()
+{
+	std::uniform_int_distribution<std::mt19937::result_type> dist6(0,3); // distribution in range [0, 3] use: dist6(rng)
+	
+	int chance_to_heal = dist6(rng);
+	
+	if(chance_to_heal == 3)
+	{
+	    m_health += 5;
+	    std::cout << "\nEntity " << (monster_count + 1) << " heals for 5\n";
+	}
+}
+void Entity::battle()
+{
+    std::cout << "\n!!! Prepare to attack monster " << (monster_count + 1) << "! (" << m_health << " health) !!!\n";
+    
+    while(m_health > 0)
+    {
+	    dmg_monster(attack(p_min_atk, p_max_atk)); //player attack, dealing dmg in amount of 'dmg_monster'
+	    if(m_health > 0)
+	    {
+	        m_heal(); //monster gets a chance to heal
+	        m_attack(get_m_atk_chance()); //monster gets a chance to attack
+	        //void is_player_dead();
+	        std::cout << "Is player dead?\n";
+	        if(!(p_health > 0))
+	        {
+	            player_death();
+	        }
+	        display_battle_stats();
+	    }
+	    else if (m_health <= 0)
+	    {
+	        monster_is_dead();
+	        display_battle_stats();
+	    }
+        else //for debugging
+        {
+	        std::cout << "\n\nYou -didn't?- kill monster. Something went wrong" << (monster_count + 1) << "?...";
+        }
+    }
+}
+void Entity::display_stats(int level, int room)
+{
+    std::cout << "\n+++++++++++++++++++++++++++++++++++++++++++\n";
+    std::cout << "Player attack damage: " << p_min_atk << " - " << p_max_atk << "\n";
+    std::cout << "Player health: " << p_health << "\n";
+    std::cout << "Entitys slain: " << monster_count << "\n";
+    std::cout << "Next: Floor " << level + 1 << ", Room " << room + 1 << "\n";
+    std::cout << "+++++++++++++++++++++++++++++++++++++++++++\n";
+}
+void Entity::display_battle_stats()
+{
+    std::cout << "\nEntity " << (monster_count + 1) << " Health: " << m_health << "\n";
+	std::cout << "Player health: " << p_health << "\n";
+	std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+}
+void Entity::display_post_battle_menu()
+{
+    std::cout << "------------------\n";
+    std::cout << "------------------\n\n";
+    std::cout << "Select an option:\n\n";
+    std::cout << "P: Proceed\n";
+    std::cout << "H: Heal\n\n";
+    std::cout << "------------------\n";
+    std::cout << "------------------\n";
+}
+char Entity::get_post_battle_menu_choice()
+{
+    char choice;
+    do
+    {
+        std::cin.get(choice);
+	    std::cin.ignore();
+	    choice = toupper(choice);
+    }
+    while(!(choice == 'P' || choice == 'H'));
+
+	return choice;
+}
+void Entity::execute_post_battle_menu_choice(char choice)
+{
+    switch (choice)
+    {
+        case 'P':
+        {
+            break;
+        }
+        case 'H':
+        {
+            heal_player(5);
+            std::cout << "Healed player for 5! Player health is now: " << p_health << std::endl;
+            break;
+        }
+        default:
+        {
+            std::cout << "...switch broke...\n";
+            break;
+        }
+    }   
+}
+void Entity::post_battle_menu()
+{
+    display_post_battle_menu();
+    execute_post_battle_menu_choice(get_post_battle_menu_choice());
+}
+void Entity::heal_player(int health)
+{
+    p_health += health;   
+}
+void Entity::is_player_dead()
+{
+        if(p_health <= 0)
+    {
+        player_death();
+    }
+}
+int Entity::player_death()
+{
+    std::cout << "Congrats! You managed to get yourself killed!\n";
+    exit(1);
+}
+void Entity::monster_is_dead()
+{
+    std::cout << "\n\nYou killed monster " << (monster_count + 1) << "!\n";
+	monster_count++;
+	if(chance_increase_p_atk())
+	{
+	    increase_p_atk();
+	}
+}
