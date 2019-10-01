@@ -305,7 +305,7 @@ void Entities::is_player_dead()
 }
 int Entities::player_death()
 {
-    std::cout << "*********************************************\n";
+    std::cout << "\n*********************************************\n";
     std::cout << "Congrats! You managed to get yourself killed!\n";
     std::cout << "*********************************************\n";
     exit(1);
