@@ -4,13 +4,13 @@
 #include <cctype> // for toupper()
 
 //classes///////////////////////////////////
-class Entity
+class Entities
 {
 	private:
 		int m_health;
 
 	public:
-	    Entity(int h){m_health = h; monster_count++;}
+	    Entities(int h){m_health = h; monster_count++;}
 	
         static int p_health;
         static int p_min_atk;
@@ -20,6 +20,13 @@ class Entity
 	    static void m_attack(bool m_attacks);
 	    static void heal_player(int health);
 	    static void increase_p_atk();
+        static void display_battle_menu();
+        static char get_battle_menu_choice();
+        static void display_p_health(){std::cout << "P health = " << p_health << "\n";}
+        void implement_battle_menu_choice(char choice);
+        void player_battle_actions();
+	    
+	    //void (*ptr_heal_player)(int p_health) = heal_player;
 	    
 		void dmg_monster(int atk){m_health -= atk;}
 		void battle();
@@ -41,11 +48,11 @@ std::mt19937 rng(dev());
 
 //global variables///////////////////////////////
 
-//initialization of Entity static variables
-int Entity::p_health = 10;
-int Entity::p_min_atk = 10;
-int Entity::p_max_atk = 20;
-int Entity::monster_count = 0;
+//initialization of Entities static variables
+int Entities::p_health = 10;
+int Entities::p_min_atk = 10;
+int Entities::p_max_atk = 20;
+int Entities::monster_count = 0;
 
 //prototypes////////////////////////////////////
 bool chance_increase_p_atk();
@@ -70,7 +77,7 @@ int main()
             if (i == 0) 
             {
                 int monster_health = (((j+2) * (j+2)) - j);
-                Entity encounter(monster_health);
+                Entities encounter(monster_health);
                 encounter.display_stats(i, j);
                 encounter.battle();
                 encounter.post_battle_menu();
@@ -78,7 +85,7 @@ int main()
             else if (i == 1) 
             {
                 int monster_health = (((j+8) * (j+8)) - j);
-                Entity encounter(monster_health);
+                Entities encounter(monster_health);
                 encounter.display_stats(i, j);
                 encounter.battle();
                 encounter.post_battle_menu();
@@ -86,7 +93,7 @@ int main()
             else if (i == 2) 
             {
                 int monster_health = (((j+16) * (j+16)) - j);
-                Entity encounter(monster_health);
+                Entities encounter(monster_health);
                 encounter.display_stats(i, j);
                 encounter.battle();
                 encounter.post_battle_menu();
@@ -94,7 +101,7 @@ int main()
             else 
             {
                 int monster_health = (((j+24) * (j+24)) - j);
-                Entity encounter(monster_health);
+                Entities encounter(monster_health);
                 encounter.display_stats(i, j);
                 encounter.battle();
                 encounter.post_battle_menu();
@@ -126,18 +133,17 @@ int attack(int min_atk, int max_atk)
     //setup rng stuff///////////////
 	std::uniform_int_distribution<std::mt19937::result_type> dist6(min_atk, max_atk); // distribution in range [min_atk, max_atk] use: dist6(rng)
 
-    //user presses A to attack
-	char atk;
-	 
-	std::cout << "\n\nPress any key to attack. ";
-	std::cin.get(atk);
-
-	//generates, prints, and returns random number for atk value
+    ////user presses A to attack
+	//char atk;
+	//std::cout << "\n\nPress any key to attack. ";
+	//std::cin.get(atk);
+	
+	////generates, prints, and returns random number for atk value
 	int atk_value = dist6(rng);
 	
 	if(atk_value == max_atk)
 	{
-	    std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+	    std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
 	    std::cout << "You land a critical strike for " << atk_value << "!\n";
 	}
 	else if(atk_value == 0)
@@ -146,14 +152,14 @@ int attack(int min_atk, int max_atk)
 	}
 	else 
 	{
-	    std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+	    std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
 	    std::cout << "You attack for: " << atk_value << "\n";
 	}
 	
 	return atk_value;
 }
-//Entity member definitions///////////////////////////////
-void Entity::increase_p_atk()
+//Entities member definitions///////////////////////////////
+void Entities::increase_p_atk()
 {
     p_min_atk = (p_min_atk * 2);
     
@@ -161,7 +167,7 @@ void Entity::increase_p_atk()
 }
 
 
-bool Entity::get_m_atk_chance()
+bool Entities::get_m_atk_chance()
 {
     bool m_attacks;
     std::uniform_int_distribution<std::mt19937::result_type> dist6(0,1); // distribution in range [0, 1] use: dist6(rng)
@@ -171,16 +177,16 @@ bool Entity::get_m_atk_chance()
     }
     return m_attacks;
 }
-void Entity::m_attack(bool m_attacks)
+void Entities::m_attack(bool m_attacks)
 {
     if(m_attacks == true)
     {
         int m_atk_dmg = 2;
         p_health -= m_atk_dmg;
-        std::cout << "Entity " << (monster_count + 1) << " attacks for " << m_atk_dmg << "!\n";
+        std::cout << "Monster " << monster_count << " attacks for " << m_atk_dmg << "!\n";
     }
 }
-void Entity::m_heal()
+void Entities::m_heal()
 {
 	std::uniform_int_distribution<std::mt19937::result_type> dist6(0,3); // distribution in range [0, 3] use: dist6(rng)
 	
@@ -189,16 +195,16 @@ void Entity::m_heal()
 	if(chance_to_heal == 3)
 	{
 	    m_health += 5;
-	    std::cout << "\nEntity " << (monster_count + 1) << " heals for 5\n";
+	    std::cout << "\nMonster " << monster_count << " heals for 5\n";
 	}
 }
-void Entity::battle()
+void Entities::battle()
 {
-    std::cout << "\n!!! Prepare to attack monster " << (monster_count + 1) << "! (" << m_health << " health) !!!\n";
+    std::cout << "\nYou encounter monster " << monster_count << " (" << m_health << " health) !!!\n\n";
     
     while(m_health > 0)
     {
-	    dmg_monster(attack(p_min_atk, p_max_atk)); //player attack, dealing dmg in amount of 'dmg_monster'
+	    player_battle_actions(); //menu, choice, and action
 	    if(m_health > 0)
 	    {
 	        m_heal(); //monster gets a chance to heal
@@ -216,38 +222,38 @@ void Entity::battle()
 	        monster_is_dead();
 	        display_battle_stats();
 	    }
-        else //for debugging
+        else //for debugging in case something goes wrong
         {
-	        std::cout << "\n\nYou -didn't?- kill monster. Something went wrong" << (monster_count + 1) << "?...";
+	        std::cout << "\n\nYou -didn't?- kill monster " << (monster_count + 1) << " Something went wrong.";
         }
     }
 }
-void Entity::display_stats(int level, int room)
+void Entities::display_stats(int level, int room)
 {
-    std::cout << "\n+++++++++++++++++++++++++++++++++++++++++++\n";
+    std::cout << "\n+++++++++++++++++++++++++++++++++\n";
+    std::cout << "          Statistics\n\n";
     std::cout << "Player attack damage: " << p_min_atk << " - " << p_max_atk << "\n";
     std::cout << "Player health: " << p_health << "\n";
-    std::cout << "Entitys slain: " << monster_count << "\n";
+    std::cout << "Monsters slain: " << (monster_count - 1) << "\n";
     std::cout << "Next: Floor " << level + 1 << ", Room " << room + 1 << "\n";
-    std::cout << "+++++++++++++++++++++++++++++++++++++++++++\n";
+    std::cout << "+++++++++++++++++++++++++++++++++\n";
 }
-void Entity::display_battle_stats()
+void Entities::display_battle_stats()
 {
-    std::cout << "\nEntity " << (monster_count + 1) << " Health: " << m_health << "\n";
+    std::cout << "\nMonster " << monster_count << " Health: " << m_health << "\n";
 	std::cout << "Player health: " << p_health << "\n";
-	std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+	std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
 }
-void Entity::display_post_battle_menu()
+void Entities::display_post_battle_menu()
 {
-    std::cout << "------------------\n";
-    std::cout << "------------------\n\n";
-    std::cout << "Select an option:\n\n";
+    std::cout << "##########################\n\n";
+    std::cout << "  OUT OF COMBAT MENU\n";
+    std::cout << "   Make a selection\n\n";
     std::cout << "P: Proceed\n";
     std::cout << "H: Heal\n\n";
-    std::cout << "------------------\n";
-    std::cout << "------------------\n";
+    std::cout << "##########################\n";
 }
-char Entity::get_post_battle_menu_choice()
+char Entities::get_post_battle_menu_choice()
 {
     char choice;
     do
@@ -260,7 +266,7 @@ char Entity::get_post_battle_menu_choice()
 
 	return choice;
 }
-void Entity::execute_post_battle_menu_choice(char choice)
+void Entities::execute_post_battle_menu_choice(char choice)
 {
     switch (choice)
     {
@@ -271,7 +277,7 @@ void Entity::execute_post_battle_menu_choice(char choice)
         case 'H':
         {
             heal_player(5);
-            std::cout << "Healed player for 5! Player health is now: " << p_health << std::endl;
+            std::cout << "Healed player for 5!" << std::endl;
             break;
         }
         default:
@@ -281,28 +287,30 @@ void Entity::execute_post_battle_menu_choice(char choice)
         }
     }   
 }
-void Entity::post_battle_menu()
+void Entities::post_battle_menu()
 {
     display_post_battle_menu();
     execute_post_battle_menu_choice(get_post_battle_menu_choice());
 }
-void Entity::heal_player(int health)
+void Entities::heal_player(int health)
 {
     p_health += health;   
 }
-void Entity::is_player_dead()
+void Entities::is_player_dead()
 {
         if(p_health <= 0)
     {
         player_death();
     }
 }
-int Entity::player_death()
+int Entities::player_death()
 {
+    std::cout << "*********************************************\n";
     std::cout << "Congrats! You managed to get yourself killed!\n";
+    std::cout << "*********************************************\n";
     exit(1);
 }
-void Entity::monster_is_dead()
+void Entities::monster_is_dead()
 {
     std::cout << "\n\nYou killed monster " << (monster_count + 1) << "!\n";
 	monster_count++;
@@ -311,3 +319,70 @@ void Entity::monster_is_dead()
 	    increase_p_atk();
 	}
 }
+void Entities::display_battle_menu()
+{
+    std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+    std::cout << "        BATTLE MENU" << std::endl;
+    std::cout << "     Make a selection\n\n";
+    //std::cout << "--------------------------\n";
+    std::cout << "A: Attack\n";
+    std::cout << "H: Heal\n";
+    std::cout << "L: Look around\n";
+    std::cout << "R: Run away\n";
+    std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+}
+char Entities::get_battle_menu_choice()
+{
+    char choice;
+    do
+    {
+        std::cin.get(choice);
+	    std::cin.ignore();
+	    choice = toupper(choice);
+    }
+    while(!(choice == 'A' || choice == 'H' || choice == 'L' || choice == 'R'));
+
+	return choice;
+}
+void Entities::implement_battle_menu_choice(char choice) //this function replaces the attack function position within battle()
+{
+    switch (choice)
+    {
+        case 'A':
+        {
+            dmg_monster(attack(p_min_atk, p_max_atk)); //player attack, dealing dmg in amount of 'dmg_monster'
+            break;
+        }
+        case 'H':
+        {
+            display_p_health();
+            heal_player(p_health);
+            //ptr_heal_player(p_health); 
+            display_p_health();
+            break;
+        }
+        case 'L':
+        {
+            std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+            std::cout << "Looking around..." << std::endl;
+            break;
+        }
+        case 'R':
+        {
+    	    std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+            std::cout << "Brave Sir Robin ran away..." << std::endl;
+            break;
+        }
+        default:
+        {
+            std::cout << "...switch broke...\n";
+            break;
+        }
+    }  
+}
+void Entities::player_battle_actions()
+{
+    display_battle_menu();
+    implement_battle_menu_choice(get_battle_menu_choice());
+}
+
