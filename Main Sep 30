@@ -119,7 +119,6 @@ bool chance_increase_p_atk()
 	{
 	    return true;
 	}
-	
 }
 int attack(int min_atk, int max_atk)
 {
@@ -176,7 +175,7 @@ void Entity::m_attack(bool m_attacks)
     {
         int m_atk_dmg = 2;
         p_health -= m_atk_dmg;
-        std::cout << "Entity " << (monster_count + 1) << " attacks for " << m_atk_dmg << "!\n";
+        std::cout << "Entity " << monster_count << " attacks for " << m_atk_dmg << "!\n";
     }
 }
 void Entity::m_heal()
@@ -188,12 +187,12 @@ void Entity::m_heal()
 	if(chance_to_heal == 3)
 	{
 	    m_health += 5;
-	    std::cout << "Entity " << (monster_count + 1) << " heals for 5\n";
+	    std::cout << "Entity " << monster_count << " heals for 5\n";
 	}
 }
 void Entity::battle()
 {
-    std::cout << "\nPrepare to attack monster " << (monster_count + 1) << " (" << m_health << " health)!!!\n";
+    std::cout << "\nPrepare to attack monster " << monster_count << " (" << m_health << " health)!!!\n";
     
     while(m_health > 0)
     {
@@ -217,7 +216,7 @@ void Entity::battle()
 	    }
         else //for debugging
         {
-	        std::cout << "\n\nYou -didn't?- kill monster. Something went wrong" << (monster_count + 1) << "?...";
+	        std::cout << "\n\nYou -didn't?- kill monster. Something went wrong" << monster_count << "?...";
         }
     }
 }
