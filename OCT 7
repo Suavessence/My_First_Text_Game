@@ -1,0 +1,801 @@
+//V.0.6.1
+//#include "pch.h"
+#include <iostream>
+#include <random> //for rng
+#include <cctype> // for toupper()
+#include <string>
+
+//classes///////////////////////////////////
+class Items
+{
+    private:
+    
+    public:
+    
+    
+    
+};
+class Weapons : public Items
+{
+    private:
+        //Weapons(int wpn_min_dmg, int wpn_max_dmg){Entities::set_p_wpn_dmg();}
+        
+    public:
+        Weapons(int wpn_min_dmg, int wpn_max_dmg){Entities::set_p_wpn_dmg();}
+    
+};
+class Entities
+{
+private:
+	int m_health;
+
+public:
+	Entities(int h) { m_health = h; monster_count++; }
+
+	static int p_health;
+	static int p_wpn_min_dmg;
+	static int p_wpn_max_dmg;
+	static int p_min_atk;
+	static int p_max_atk;
+	static int monster_count;
+
+	static void m_attack(bool m_attacks);
+	static void heal_player(int health);
+	static void increase_p_atk();
+	static void set_p_wpn_dmg(int wpn_min_dmg, int wpn_max_dmg){p_wpn_min_dmg = wpn_min_dmg; p_wpn_max_dmg = wpn_max_dmg;}
+	static void display_battle_menu();
+	static char get_battle_menu_choice();
+	static void display_p_health() { std::cout << "P health = " << p_health << "\n"; }
+	void implement_battle_menu_choice(char choice);
+	void player_battle_actions();
+
+	void dmg_monster(int atk) { m_health -= atk; }
+	void battle(int monster_number);
+	void m_heal();
+	bool get_m_atk_chance();
+	void display_stats(int level, int room);
+	void display_battle_stats();
+	void display_post_battle_menu();
+	char get_post_battle_menu_choice();
+	void execute_post_battle_menu_choice(char);
+	void post_battle_menu();
+	void is_player_dead();
+	int player_death();
+	void monster_is_dead();
+
+	//logic for ASCII art/////////////////////
+	static const int first_possible_monster = 0;
+	static const int last_possible_monster = 5; //total number of different monsters
+	int roll_for_random_monster(int first_possible_monster, int last_possible_monster);
+	static void draw_random_monster_switch(int monster_number);
+	static void cout_random_monster_switch(int monster_number);
+
+	//draw ASCII art////////////////////////// if adding monsters, update first/last_possible_monster, and draw_random_monster_switch()
+	static void draw_lion();
+	static void draw_blob();
+	static void draw_boar();
+	static void draw_spider();
+	static void draw_wolf();
+	static void draw_elephant();
+	///////////////////////
+	static void draw_menu();
+	static void draw_chest();
+	static void draw_bottles();
+	static void draw_warrior();
+	static void draw_book();
+	static void draw_house();
+	static void draw_scroll();
+	static void draw_doors();
+	static void draw_oozing_oozworks();
+	static void draw_loading();
+	static void draw_victory();
+
+};
+//global RNG stuff///////////////////////////////
+std::random_device dev;
+std::mt19937 rng(dev());
+
+//global variables///////////////////////////////
+
+//initialization of Entities static variables
+int Entities::p_health = 100;
+int Entities::p_wpn_min_dmg = 0;
+int Entities::p_wpn_max_dmg = 0;
+int Entities::p_min_atk =4 + p_wpn_min_dmg;
+int Entities::p_max_atk = 6 + p_wpn_max_dmg;
+int Entities::monster_count = 0;
+
+//prototypes////////////////////////////////////
+bool chance_increase_p_atk();
+void welcome() {
+	std::cout << R"(
+    **************************************************************************
+                                Welcome to the game!!!
+    **************************************************************************
+    )" << std::endl;
+}
+void congrats() {
+	std::cout << R"(
+    **************************************************************************
+                        Congrats! You have won the game!!!
+    **************************************************************************
+    )" << std::endl;
+}
+
+//main////////////////////////////////////////////
+int main()
+{
+	welcome();
+
+	const int arr_size = 5;
+	const int floor_1[arr_size][arr_size] = {};
+	for (int i = 0; i < arr_size; i++)
+	{
+		for (int j = 0; j < arr_size; j++)
+		{
+			if (i == 0)
+			{
+				int monster_health = (((j + 2) * (j + 2)) - j);
+				Entities encounter(monster_health);
+				encounter.display_stats(i, j);
+				encounter.battle(encounter.roll_for_random_monster(Entities::first_possible_monster, Entities::last_possible_monster));
+				encounter.post_battle_menu();
+			}
+			//else if (i == 1) 
+			//{
+			//    int monster_health = (((j+8) * (j+8)) - j);
+			//    Entities encounter(monster_health);
+			//    encounter.display_stats(i, j);
+			//    encounter.battle();
+			//    encounter.post_battle_menu();
+			//}
+			//else if (i == 2) 
+			//{
+			//    int monster_health = (((j+16) * (j+16)) - j);
+			//    Entities encounter(monster_health);
+			//    encounter.display_stats(i, j);
+			//    encounter.battle();
+			//    encounter.post_battle_menu();
+			//}
+			//else 
+			//{
+			//    int monster_health = (((j+24) * (j+24)) - j);
+			//    Entities encounter(monster_health);
+			//    encounter.display_stats(i, j);
+			//    encounter.battle();
+			//    encounter.post_battle_menu();
+			//}
+		}
+	}
+
+	congrats();
+}
+//non-member definitions///////////////////////////////
+bool chance_increase_p_atk()
+{
+	//setup rng stuff///////////////
+	std::uniform_int_distribution<std::mt19937::result_type> dist6(0, 3); // distribution in range [min_atk, max_atk] use: dist6(rng)
+	int chance = dist6(rng);
+	if (chance < 3)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+
+}
+int attack(int min_atk, int max_atk)
+{
+	//setup rng stuff///////////////
+	std::uniform_int_distribution<std::mt19937::result_type> dist6(min_atk, max_atk); // distribution in range [min_atk, max_atk] use: dist6(rng)
+
+	////user presses A to attack
+	//char atk;
+	//std::cout << "\n\nPress any key to attack. ";
+	//std::cin.get(atk);
+
+	////generates, prints, and returns random number for atk value
+	int atk_value = dist6(rng);
+
+	if (atk_value == max_atk)
+	{
+		std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+		std::cout << "You land a critical strike for " << atk_value << "!\n";
+	}
+	else if (atk_value == 0)
+	{
+		std::cout << "Your attack missed...\n";
+	}
+	else
+	{
+		std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+		std::cout << "You attack for: " << atk_value << "\n";
+	}
+
+	return atk_value;
+}
+//Entities member definitions///////////////////////////////
+void Entities::increase_p_atk()
+{
+	p_min_atk = (p_min_atk * 2);
+
+	p_max_atk = (p_max_atk * 2);
+}
+
+
+bool Entities::get_m_atk_chance()
+{
+	bool m_attacks;
+	std::uniform_int_distribution<std::mt19937::result_type> dist6(0, 1); // distribution in range [0, 1] use: dist6(rng)
+	if (dist6(rng) == 1)
+	{
+		m_attacks = true;
+	}
+	return m_attacks;
+}
+void Entities::m_attack(bool m_attacks)
+{
+	if (m_attacks == true)
+	{
+		int m_atk_dmg = 2;
+		p_health -= m_atk_dmg;
+		std::cout << "Monster " << monster_count << " attacks for " << m_atk_dmg << "!\n";
+	}
+}
+void Entities::m_heal()
+{
+	std::uniform_int_distribution<std::mt19937::result_type> dist6(0, 3); // distribution in range [0, 3] use: dist6(rng)
+
+	int chance_to_heal = dist6(rng);
+
+	if (chance_to_heal == 3)
+	{
+		m_health += 5;
+		std::cout << "\nMonster " << monster_count << " heals for 5\n";
+	}
+}
+void Entities::battle(int monster_number)
+{
+	std::cout << "\nYou encounter monster " << monster_count << ", ";
+	cout_random_monster_switch(monster_number);
+
+	while (m_health > 0)
+	{
+		Entities::draw_random_monster_switch(monster_number); //draw random monster
+		player_battle_actions(); //menu, choice, and action
+		if (m_health > 0)
+		{
+			m_heal(); //monster gets a chance to heal
+			m_attack(get_m_atk_chance()); //monster gets a chance to attack
+			//void is_player_dead();
+			std::cout << "Is player dead?\n";
+			if (!(p_health > 0))
+			{
+				player_death();
+			}
+			display_battle_stats();
+		}
+		else if (m_health <= 0)
+		{
+			monster_is_dead();
+			display_battle_stats();
+		}
+		else //for debugging in case something goes wrong
+		{
+			std::cout << "\n\nYou -didn't?- kill monster " << (monster_count + 1) << " Something went wrong.";
+		}
+	}
+}
+void Entities::display_stats(int level, int room)
+{
+	std::cout << "\n+++++++++++++++++++++++++++++++++\n";
+	std::cout << "          Statistics\n\n";
+	std::cout << "Player attack damage: " << p_min_atk << " - " << p_max_atk << "\n";
+	std::cout << "Player health: " << p_health << "\n";
+	std::cout << "Monsters slain: " << (monster_count - 1) << "\n";
+	std::cout << "Next: Floor " << level + 1 << ", Room " << room + 1 << "\n";
+	std::cout << "+++++++++++++++++++++++++++++++++\n";
+}
+void Entities::display_battle_stats()
+{
+	std::cout << "\nMonster " << monster_count << " Health: " << m_health << "\n";
+	std::cout << "Player health: " << p_health << "\n";
+	std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+}
+void Entities::display_post_battle_menu()
+{
+	std::cout << "##########################\n\n";
+	std::cout << "  OUT OF COMBAT MENU\n";
+	std::cout << "   Make a selection\n\n";
+	std::cout << "P: Proceed\n";
+	std::cout << "H: Heal\n\n";
+	std::cout << "##########################\n";
+}
+char Entities::get_post_battle_menu_choice()
+{
+	char choice;
+	do
+	{
+		std::cin.get(choice);
+		std::cin.ignore();
+		choice = toupper(choice);
+	} while (!(choice == 'P' || choice == 'H'));
+	std::cout << std::string(60, '\n');
+	return choice;
+}
+void Entities::execute_post_battle_menu_choice(char choice)
+{
+	switch (choice)
+	{
+	case 'P':
+	{
+		break;
+	}
+	case 'H':
+	{
+		heal_player(5);
+		std::cout << "Healed player for 5!" << std::endl;
+		break;
+	}
+	default:
+	{
+		std::cout << "...switch broke...\n";
+		break;
+	}
+	}
+}
+void Entities::post_battle_menu()
+{
+	display_post_battle_menu();
+	execute_post_battle_menu_choice(get_post_battle_menu_choice());
+}
+void Entities::heal_player(int health)
+{
+	p_health += health;
+}
+void Entities::is_player_dead()
+{
+	if (p_health <= 0)
+	{
+		player_death();
+	}
+}
+int Entities::player_death()
+{
+	std::cout << "\n*********************************************\n";
+	std::cout << "Congrats! You managed to get yourself killed!\n";
+	std::cout << "*********************************************\n";
+	exit(1);
+}
+void Entities::monster_is_dead()
+{
+	std::cout << "\n\nYou killed monster " << (monster_count + 1) << "!\n";
+	monster_count++;
+	if (chance_increase_p_atk())
+	{
+		increase_p_atk();
+	}
+}
+void Entities::display_battle_menu()
+{
+	std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+	std::cout << "        BATTLE MENU" << std::endl;
+	std::cout << "     Make a selection\n\n";
+	std::cout << "A: Attack\n";
+	std::cout << "H: Heal\n";
+	std::cout << "L: Look around\n";
+	std::cout << "R: Run away\n";
+	std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+}
+char Entities::get_battle_menu_choice()
+{
+	char choice;
+	do
+	{
+		std::cin.get(choice);
+		std::cin.ignore();
+		choice = toupper(choice);
+	} while (!(choice == 'A' || choice == 'H' || choice == 'L' || choice == 'R'));
+
+	std::cout << std::string(60, '\n');
+
+	return choice;
+}
+void Entities::implement_battle_menu_choice(char choice) //this function replaces the attack function position within battle()
+{
+	switch (choice)
+	{
+	case 'A':
+	{
+		dmg_monster(attack(p_min_atk, p_max_atk)); //player attack, dealing dmg in amount of 'dmg_monster'
+		break;
+	}
+	case 'H':
+	{
+		std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+		heal_player(p_health);
+		display_p_health();
+		break;
+	}
+	case 'L':
+	{
+		std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+		std::cout << "Looking around..." << std::endl;
+		break;
+	}
+	case 'R':
+	{
+		std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+		std::cout << "Brave Sir Robin ran away..." << std::endl;
+		break;
+	}
+	default:
+	{
+		std::cout << "...switch broke...\n";
+		break;
+	}
+	}
+}
+void Entities::player_battle_actions()
+{
+	display_battle_menu();
+	implement_battle_menu_choice(get_battle_menu_choice());
+}
+int Entities::roll_for_random_monster(int first_possible_monster, int last_possible_monster)
+{
+	std::uniform_int_distribution<std::mt19937::result_type> dist6(first_possible_monster, last_possible_monster); // distribution in range [0, 3] use: dist6(rng)
+	int test = dist6(rng);
+	std::cout << "test number: "<< test << std::endl;
+	return test;
+}
+void Entities::draw_random_monster_switch(int monster_number) //this argument will be: Entities::roll_for_random_monster(int first_possible_monster, int last_possible_monster)
+{
+	switch (monster_number)
+	{
+	case 0: {Entities::draw_lion(); break; }
+	case 1: {Entities::draw_boar(); break; }
+	case 2: {Entities::draw_blob(); break; }
+	case 3: {Entities::draw_spider(); break; }
+	case 4: {Entities::draw_wolf(); break; }
+	case 5: {Entities::draw_elephant(); break; }
+	default: break;
+	}
+}
+void Entities::cout_random_monster_switch(int monster_number) 
+{
+	switch (monster_number)
+	{
+	case 0: {std::cout << "a lion! "; break;}
+	case 1: {std::cout << "a wild boar! "; break; }
+	case 2: {std::cout << "the blob! "; break; }
+	case 3: {std::cout << "a giant spider! "; break; }
+	case 4: {std::cout << "a ferocious wolf! "; break; }
+	case 5: {std::cout << "an elephant! "; break; }
+	default: break;
+	}
+}
+void Entities::draw_lion()
+{
+	std::cout << R"(
+======================================================================
+                                                ,w.
+                                              ,YWMMw  ,M  ,
+                         _.---.._   __..---._.'MMMMMw,wMWmW,
+                    _.-""        """           YP"WMMMMMMMMMb,
+                 .-' __.'                   .'     MMMMW^WMMMM;
+     _,        .'.-'"; `,       /`     .--""      :MMM[==MWMW^;
+  ,mM^"     ,-'.'   /   ;      ;      /   ,       MMMMb_wMW"  @\
+ ,MM:.    .'.-'   .'     ;     `\    ;     `,     MMMMMMMW `"=./`-,
+ WMMm__,-'.'     /      _.\      F"""-+,,   ;_,_.dMMMMMMMM[,_ / `=_}
+ "^MP__.-'    ,-' _.--""   `-,   ;       \  ; ;MMMMMMMMMMW^``; __|
+            /   .'            ; ;         )  )`{  \ `"^W^`,   \  :
+           /  .'             /  (       .'  /     Ww._     `.  `"
+          /  Y,              `,  `-,=,_{   ;      MMMP`""-,  `-._.-,
+         (--, )                `,_ / `) \/"")      ^"      `-, -;"\:
+          `"""                    `"""   `"'                  `---" 
+======================================================================
+        )" << std::endl;
+}
+void Entities::draw_blob()
+{
+	std::cout << R"(
+======================================================================
+                     , - ~ ~ ~ - ,
+                 , '               ' ,
+               ,    9           6      ,
+              ,                         ,
+             ,               @@     @@   ,
+             , 6             @@     @@   ,
+             ,        6                  ,
+              ,                          ,
+               ,  6                     ,
+                 ,       9         6, '
+                   ' - , _ _ _ ,  '
+======================================================================
+)" << std::endl;
+}
+void Entities::draw_boar()
+{
+	std::cout << R"(
+======================================================================
+                      _,-""""-..__
+                 |`,-'_. `  ` ``  `--'""".
+                 ;  ,'  | ``  ` `  ` ```  `.
+               ,-'   ..-' ` ` `` `  `` `  ` |==.
+             ,'    ^    `  `    `` `  ` `.  ;   \
+            `}_,-^-   _ .  ` \ `  ` __ `   ;    #
+               `"---"' `-`. ` \---""`.`.  `;
+                          \\` ;       ; `. `,
+                           ||`;      / / | |
+                          //_;`    ,_;' ,_;"
+======================================================================
+)" << std::endl;
+}
+void Entities::draw_spider()
+{
+	std::cout << R"(
+======================================================================
+                        /\  .-"""-.  /\
+                       //\\/  ,,,  \//\\
+                       |/\| ,;;;;;, |/\|
+                       //\\\;-"""-;///\\
+                      //  \/   .   \/  \\
+                     (| ,-_| \ | / |_-, |)
+                       //`__\.-.-./__`\\
+                      // /.-(() ())-.\ \\
+                     (\ |)   '---'   (| /)
+                      ` (|           |) `
+                        \)           (/
+======================================================================
+)" << std::endl;
+}
+void Entities::draw_wolf()
+{
+	std::cout << R"(
+======================================================================
+                                      ,     ,
+                                      |\---/|
+                                     /  , , |
+                                __.-'|  / \ /
+                       __ ___.-'        ._O|
+                    .-'  '        :      _/
+                   / ,    .        .     |
+                  :  ;    :        :   _/
+                  |  |   .'     __:   /
+                  |  :   /'----'| \  |
+                  \  |\  |      | /| |
+                   '.'| /       || \ |
+                   | /|.'       '.l \\_
+                   || ||             '-'
+                   '-''-'
+======================================================================
+)" << std::endl;
+}
+void Entities::draw_elephant()
+{
+	std::cout << R"(
+======================================================================
+                      ___.-~"~-._   __....__
+                    .'    `    \ ~"~        ``-.
+                   /` _      )  `\              `\
+                  /`  a)    /     |               `\
+                 :`        /      |                 \
+            <`-._|`  .-.  (      /   .            `;\\
+             `-. `--'_.'-.;\___/'   .      .       | \\
+          _     /:--`     |        /     /        .'  \\
+         ("\   /`/        |       '     '         /    :`;
+         `\'\_/`/         .\     /`~`=-.:        /     ``
+           `._.'          /`\    |      `\      /(
+                         /  /\   |        `Y   /  \
+                        J  /  Y  |         |  /`\  \
+                       /  |   |  |         |  |  |  |
+                      "---"  /___|        /___|  /__|
+======================================================================
+)" << std::endl;
+}
+void Entities::draw_menu()
+{
+	std::cout << R"(
+___  ___ _____ _   _ _   _ 
+|  \/  ||  ___| \ | | | | |
+| .  . || |__ |  \| | | | |
+| |\/| ||  __|| . ` | | | |
+| |  | || |___| |\  | |_| |
+\_|  |_/\____/\_| \_/\___/
+)" << std::endl;
+}
+void Entities::draw_chest()
+{
+	std::cout << R"(
+*******************************************************************************
+          |                   |                  |                     |       
+ _________|________________.=""_;=.______________|_____________________|_______
+|                   |  ,-"_,=""     `"=.|                  |                   
+|___________________|__"=._o`"-._        `"=.______________|___________________
+          |                `"=._o`"=._      _`"=._                     |       
+ _________|_____________________:=._o "=._."_.-="'"=.__________________|_______
+|                   |    __.--" , ; `"=._o." ,-"""-._ ".   |                   
+|___________________|_._"  ,. .` ` `` ,  `"-._"-._   ". '__|___________________
+          |           |o`"=._` , "` `; .". ,  "-._"-._; ;              |       
+ _________|___________| ;`-.o`"=._; ." ` '`."\` . "-._ /_______________|_______
+|                   | |o;    `"-.o`"=._``  '` " ,__.--o;   |                   
+|___________________|_| ;     (#) `-.o `"=.`_.--"_o.-; ;___|___________________
+____/______/______/___|o;._    "      `".o|o_.--"    ;o;____/______/______/____
+/______/______/______/_"=._o--._        ; | ;        ; ;/______/______/______/_
+____/______/______/______/__"=._o--._   ;o|o;     _._;o;____/______/______/____
+/______/______/______/______/____"=._o._; | ;_.--"o.--"_/______/______/______/_
+____/______/______/______/______/_____"=.o|o_.--""___/______/______/______/____
+/______/______/______/______/______/______/______/______/______/______/______/_
+*******************************************************************************
+)" << std::endl;
+}
+void Entities::draw_bottles()
+{
+	std::cout << R"(
+======================================================================
+        ___
+        )_(                                            _
+        | |                                           [_ ]
+      .-'-'-.       _                               .-'. '-.
+     /-::_..-\    _[_]_                            /:;/ _.-'\
+     )_     _(   /_   _\      [-]                  |:._   .-|
+     |;::    |   )_``'_(    .-'-'-.       (-)      |:._     |
+     |;::    |   |;:   |    :-...-:     .-'-'-.    |:._     |
+     |;::    |   |;:   |    |;:   |     |-...-|    |:._     |
+     |;::-.._|   |;:.._|    |;:.._|     |;:.._|    |:._     |
+     `-.._..-'   `-...-'    `-...-'     `-...-'    `-.____.-'
+======================================================================
+)" << std::endl;
+}
+void Entities::draw_warrior()
+{
+	std::cout << R"(
+======================================================================
+                       ,   A           {}
+                  / \, | ,        .--.
+                 |    =|= >      /.--.\
+                  \ /` | `       |====|
+                   `   |         |`::`|  
+                       |     .-;`\..../`;_.-^-._
+                      /\\/  /  |...::..|`   :   `|
+                      |:'\ |   /'''::''|   .:.   |
+                       \ /\;-,/\   ::  |..:::::..|
+                       |\ <` >  >._::_.| ':::::' |
+                       | `""`  /   ^^  |   ':'   |
+======================================================================
+)" << std::endl;
+}
+void Entities::draw_book()
+{
+	std::cout << R"(
+======================================================================
+           
+                  .__=\__                  .__==__,
+                jf'      ~~=\,         _=/~'      `\,
+            ._jZ'            `\q,   /=~             `\__
+           j5(/                 `\./                  V\\,
+         .Z))' _____              |             .____, \)/\
+        j5(K=~~     ~~~~\=_,      |      _/=~~~~'    `~~+K\\,
+      .Z)\/                `~=L   |  _=/~                 t\ZL
+     j5(_/.__/===========\__   ~q |j/   .__============___/\J(N,
+    4L#XXXL_________________XGm, \P  .mXL_________________JXXXW8L
+    ~~~~~~~~~~~~~~~~~~~~~~~~~YKWmmWmmW@~~~~~~~~~~~~~~~~~~~~~~~~~~
+======================================================================
+)" << std::endl;
+}
+void Entities::draw_house()
+{
+	std::cout << R"(
+======================================================================
+                              ____
+                 _           |---||            _
+                 ||__________|---||___________||
+                /_ _ _ _ _ _ |:._|'_ _ _ _ _ _ _\`.
+               /_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\:`.
+              /_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\::`.
+             /:.___________________________________\:::`-._
+         _.-'_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _`::::::`-.._
+     _.-' _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ `:::::::::`-._
+   ,'_:._________________________________________________`:_.::::-';`
+    `.'/ || |:::::`.'/::::::::`.'/::::::::`.'/::::::|.`.'/.|     :|
+     ||  || |::::::||::::::::::||::::::::::||:::::::|..||..|     ||
+     ||  || |  __  || ::  ___  || ::  __   || ::    |..||;||     ||
+     ||  || | |::| || :: |:::| || :: |::|  || ::    |.|||:||_____||__
+     ||  || | |::| || :: |:::| || :: |::|  || ::    |.|||:||_|_|_||,(
+     ||_.|| | |::| || :: |:::| || :: |::|  || ::    |.'||..|    _||,|
+  .-'::_.:'.:-.--.-::--.-:.--:-::--.--.--.-::--.--.-:.-::,'.--.'_|| |
+   );||_|__||_|__|_||__|_||::|_||__|__|__|_||__|__|_|;-'|__|_(,' || '-
+   ||||  || |. . . ||. . . . . ||. . . . . ||. . . .|::||;''||   ||:'
+   ||||.;  _|._._._||._._._._._||._._._._._||._._._.|:'||,, ||,,
+   '''''           ''-         ''-         ''-         '''  '''
+======================================================================
+)" << std::endl;
+}
+void Entities::draw_scroll()
+{
+	std::cout << R"(
+======================================================================
+                 
+                         _______________
+                    ()==(              (@==()
+                         '_____________'}
+                           \             \
+                            )             )
+                         __/_____________/
+                    ()==(               (@==()
+                         '--------------'
+                
+======================================================================        
+)" << std::endl;
+}
+void Entities::draw_doors()
+{
+	std::cout << R"(
+======================================================================
+    _____________________________________________________
+      |                            ,                            |
+      |      .-'````````'.        '(`        .-'```````'-.      |
+      |    .` |           `.      `)'      .` |           `.    |          
+      |   /   |   ()        \      U      /   |    ()       \   |
+      |  |    |    ;         | o   T   o |    |    ;         |  |
+      |  |    |     ;        |  .  |  .  |    |    ;         |  |
+      |  |    |     ;        |   . | .   |    |    ;         |  |
+      |  |    |     ;        |    .|.    |    |    ;         |  |
+      |  |    |____;_________|     |     |    |____;_________|  |  
+      |  |   /  __ ;   -     |     !     |   /     `'() _ -  |  |
+      |  |  / __  ()        -|        -  |  /  __--      -   |  |
+      |  | /        __-- _   |   _- _ -  | /        __--_    |  |
+      |__|/__________________|___________|/__________________|__|
+     /                                             _ -        lc \
+    /   -_- _ -             _- _---                       -_-  -_ \
+    
+======================================================================
+)" << std::endl;
+}
+void Entities::draw_oozing_oozworks()
+{
+	std::cout << R"(
+======================================================================
+     _____          _               _____                              _        
+    |  _  |        (_)             |  _  |                            | |       
+    | | | | ___ _____ _ __   __ _  | | | | ___ ______      _____  _ __| | _____ 
+    | | | |/ _ \_  / | '_ \ / _` | | | | |/ _ \_  /\ \ /\ / / _ \| '__| |/ / __|
+    \ \_/ / (_) / /| | | | | (_| | \ \_/ / (_) / /  \ V  V / (_) | |  |   <\__ \
+     \___/ \___/___|_|_| |_|\__, |  \___/ \___/___|  \_/\_/ \___/|_|  |_|\_\___/
+                             __/ |                                              
+                            |___/  
+======================================================================
+)" << std::endl;
+}
+void Entities::draw_loading()
+{
+	std::cout << R"(
+======================================================================
+                            
+    db       .d88b.   .d8b.  d8888b. d888888b d8b   db  d888b  
+    88      .8P  Y8. d8' `8b 88  `8D   `88'   888o  88 88' Y8b 
+    88      88    88 88ooo88 88   88    88    88V8o 88 88      
+    88      88    88 88~~~88 88   88    88    88 V8o88 88  ooo 
+    88boo.  `8b  d8' 88   88 88  .8D   .88.   88  V888 88. ~8~ 
+    Y88888P  `Y88P'  YP   YP Y8888D' Y888888P VP   V8P  Y888P
+    
+======================================================================
+)" << std::endl;
+}
+void Entities::draw_victory()
+{
+	std::cout << R"(
+**********************************************************************
+                            
+    db    db  d888888b  .d88b  d888888b  .d88b.   .d8888b.  db    db   [8]
+    88    88    `88'   .8P       `88'   .8P  Y8.  d8' `88b  88    88   [8]
+    88    88     88    88         88    88    88  88oo888    8o  o8    [8]
+    88    88     88    88         88    88    88  88~~~88.    ^88^     [8]
+     8b  o8     .88.   `8b        88    `8b  d8'  88     88    88       
+       88     Y888888P  `Y88P     88     `Y88P'   YP     YP    88      [8]
+       
+**********************************************************************
+)" << std::endl;
+}
