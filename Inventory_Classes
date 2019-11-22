@@ -1,0 +1,144 @@
+#include <iostream>
+#include <vector>
+#include <random>
+
+/* 
+    I managed to create an inventory vector for all items in the game. I also created a second inventory vector, to which object items from the first
+    inventory can be coppied (the player equips an item).
+    
+    Next up:
+    -insert checks for if an item is equippable (e.g., number of hands not exceeded, number of body parts not exceeded, etc... determine other possible limitations)
+    -create function to ask player if item should be equipped (have loot drop call it).
+*/
+//global RNG stuff///////////////////////////////
+std::random_device dev;
+std::mt19937 rng(dev());
+
+//classes///////////////////////////////////////////
+class Inventories;
+class Items
+{
+    private:
+    protected:
+        //item name and meta data///////////////////////////
+        std::string name;
+        std::string item_class;
+        std::string item_slot;
+        //item attributes//////////////////////////////////
+        int max_health;
+        int atk_dmg;
+        
+    public:
+        //can create different constructors later on, depending on types of items desired.
+        Items(std::string name_constrArg, std::string item_class_constrArg, std::string item_slot_constrArg, int max_health_constrArg, int atk_dmg_constrArg)
+        {
+            name = name_constrArg;
+            item_class = item_class_constrArg;
+            item_slot = item_slot_constrArg;
+            max_health = max_health_constrArg;
+            atk_dmg = atk_dmg_constrArg;
+        }
+        friend class Inventories;
+};
+
+class Inventories
+{
+    private:
+    protected:
+        std::vector<Items> inventory; // houses all items
+        std::vector<Items> equipped_items; //items equipped on player
+    public:
+        void assign_inventory(); 
+        //use "assign_inventory()" to actually design and create items; calls a bunch of "fill_inventory()"s;
+        
+        void fill_inventory(std::string name_constrArg, std::string item_class_constrArg, std::string item_slot_constrArg, int max_health_constrArg, int atk_dmg_constrArg)
+        {
+            //"fill_inventory()" is called by "assign_inventory()" to: 1. Instantiate new "Items" objects with "Items" constructor; 
+            //and 2. Push them into an inventory vector
+            Items new_item(name_constrArg, item_class_constrArg, item_slot_constrArg, max_health_constrArg, atk_dmg_constrArg);
+            inventory.push_back(new_item);
+        }
+        
+        void equip_item(Items& item_to_equip)
+        {
+            //"equip_item()" copies an object from "std::vector<Items> inventory" into "std::vector<Items> equipped_items"
+            //it is passed a single "Items" object reference
+            equipped_items.push_back(item_to_equip);
+        }
+
+        //print_item handles all the cout for a printed item; to be eventually moved to its own displays class
+        void print_item(Items& printed_item)
+        {
+            std::cout << "-------------------------------"<< "\n";
+            std::cout << printed_item.name << "\n";
+            std::cout << printed_item.item_class << " : " << printed_item.item_slot << "\n";
+            std::cout << "------------"<< "\n";
+            std::cout << "max health: +" << printed_item.max_health << "\n";
+            std::cout << "attack dmg: +" << printed_item.atk_dmg << "\n\n";
+        }
+        
+        void display_inventory()
+        {
+            std::cout << "Here is a list of all items in the game: \n"; //for dev purposes
+            int size = inventory.size();
+            for (int i = 0; i < size; i++)
+            {
+                print_item(inventory[i]);
+            }
+        }
+        
+        void display_equipped()
+        {
+            std::cout << "Here is what's equipped: \n"; //for dev purposes
+            int size = equipped_items.size();
+            for (int i = 0; i < size; i++)
+            {
+                print_item(equipped_items[i]);
+            }
+        }
+        
+        //use rng to generate and return a random int (an index number) from 0 to inventory size; can be passed to function for loot drops or equipping item
+        int return_random_item_index()
+        {
+            int max = inventory.size();
+            std::uniform_int_distribution<std::mt19937::result_type> dist6(0, max); // distribution in range (min, max)
+            return dist6(rng);
+        }
+        
+        //calls "return_random_item_index()" to assign an index for "std::vector<Items> inventory"
+        //then it displays that item's info; asks player if they want to equip item; if yes, checks if item can be equipped; if yes, calls "equip_item()"
+        void drop_loot()
+        {
+            int i = return_random_item_index();
+            std::cout << "Loot dropped!\n";  //for dev purposes
+            std::cout << "Random index is: " << i << std::endl;  //for dev purposes
+            print_item(inventory[i]);
+
+            equip_item(inventory[i]);
+        }
+};
+
+//main//////////////////////////////////////////
+int main()
+{
+    Inventories inv;
+    inv.assign_inventory();
+    //inv.display_inventory();
+    inv.drop_loot();
+    inv.display_equipped();
+
+    return 0;
+}
+
+void Inventories::assign_inventory()
+{
+    //paramaters are: "name", "class" (weapon, armour, jewelry), "slot" (1-handed, 2-handed, body), max_health, atk_dmg
+    // use: fill_inventory("name"            , 't', "slot",   0,    0);
+    fill_inventory("Short Sword"            , "weapon",  "1-handed",   0,    3);
+    fill_inventory("Large Axe"              , "weapon",  "2-handed",   0,    9);
+    fill_inventory("Spiked Shield"          , "weapon",  "1-handed",   5,    2);
+    fill_inventory("The Butcher's Cleaver"  , "weapon",  "1-handed",   0,   29);
+    fill_inventory("Amulet"                 , "jewelry", "body",       7,    6);
+    fill_inventory("Holy Chainmail"         , "armour",  "body",      16,    0);
+    fill_inventory("Spiked Helm"            , "armour",  "body",       5,    2);
+}   
