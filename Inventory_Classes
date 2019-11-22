@@ -7,8 +7,10 @@
     inventory can be coppied (the player equips an item).
     
     Next up:
-    -insert checks for if an item is equippable (e.g., number of hands not exceeded, number of body parts not exceeded, etc... determine other possible limitations)
+    -insert checks for if an item is equippable (e.g., number of hands not exceeded, number of body parts not exceeded, etc... determine other possible limitations).
+        -if no room for otherwise valid item, create option to replace currently equipped item with new item.
     -create function to ask player if item should be equipped (have loot drop call it).
+    -create function to remove item from equipped_items
 */
 //global RNG stuff///////////////////////////////
 std::random_device dev;
@@ -69,16 +71,16 @@ class Inventories
         //print_item handles all the cout for a printed item; to be eventually moved to its own displays class
         void print_item(Items& printed_item)
         {
-            std::cout << "-------------------------------"<< "\n";
             std::cout << printed_item.name << "\n";
             std::cout << printed_item.item_class << " : " << printed_item.item_slot << "\n";
-            std::cout << "------------"<< "\n";
             std::cout << "max health: +" << printed_item.max_health << "\n";
-            std::cout << "attack dmg: +" << printed_item.atk_dmg << "\n\n";
+            std::cout << "attack dmg: +" << printed_item.atk_dmg << "\n";
+            std::cout << "-------------------------------"<< "\n";
         }
         
         void display_inventory()
         {
+            std::cout << "-------------------------------"<< "\n";
             std::cout << "Here is a list of all items in the game: \n"; //for dev purposes
             int size = inventory.size();
             for (int i = 0; i < size; i++)
@@ -89,7 +91,9 @@ class Inventories
         
         void display_equipped()
         {
+            std::cout << "-------------------------------"<< "\n";
             std::cout << "Here is what's equipped: \n"; //for dev purposes
+            std::cout << "-------------------------------"<< "\n";
             int size = equipped_items.size();
             for (int i = 0; i < size; i++)
             {
@@ -110,8 +114,10 @@ class Inventories
         void drop_loot()
         {
             int i = return_random_item_index();
+            std::cout << "-------------------------------"<< "\n";
             std::cout << "Loot dropped!\n";  //for dev purposes
             std::cout << "Random index is: " << i << std::endl;  //for dev purposes
+            std::cout << "-------------------------------"<< "\n";
             print_item(inventory[i]);
 
             equip_item(inventory[i]);
@@ -124,6 +130,8 @@ int main()
     Inventories inv;
     inv.assign_inventory();
     //inv.display_inventory();
+    inv.drop_loot();
+    inv.drop_loot();
     inv.drop_loot();
     inv.display_equipped();
 
