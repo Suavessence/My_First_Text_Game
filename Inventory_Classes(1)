@@ -10,10 +10,8 @@
     I created a function to ask player if item should be equipped (loot drop calls it).
     
     Next up:
-    -Working on smoothing out checks for item equipability...
-    -insert checks for if an item is equippable (e.g., number of hands not exceeded, number of body parts not exceeded, etc... determine other possible limitations).
-        -if no room for otherwise valid item, create option to replace currently equipped item with new item.
-    -create function to remove item from equipped_items
+    -if no room for otherwise valid item, create option to replace currently equipped item with new item (2 functions: user interface, and logic)
+    -create function to remove item from equipped_items (i guess this would be standalone)
 */
 //global RNG stuff///////////////////////////////
 std::random_device dev;
@@ -120,7 +118,6 @@ class Inventories
             int i = return_random_item_index();
             std::cout << "-------------------------------"<< "\n";
             std::cout << "Loot dropped!\n";  //for dev purposes
-            std::cout << "Random index is: " << i << std::endl;  //for dev purposes
             std::cout << "-------------------------------"<< "\n";
             print_item(inventory[i]);
             
@@ -134,7 +131,7 @@ class Inventories
             {
                 std::cout << "Item slot is full. Do you wish to replace a currently equipped item with " << inventory[i].name << " ?" << std::endl;
             }
-            else {std::cout << "other...\n";}
+            else {}
         }
         
         //"is_item_slot_available()" is called by "drop_loot()"
@@ -147,16 +144,13 @@ class Inventories
             {
                 if (equipped_items[i].item_slot == "1-handed")
                 {
-                    std::cout << "Adding 1 to hands full...\n";
                     hands_full++;
                 }
                 else if (equipped_items[i].item_slot == "2-handed")
                 {
-                    std::cout << "Adding 2 hands full...\n";
                     hands_full += 2;
                 }
             }
-            std::cout << hands_full << std::endl;
             return hands_full;
         }
         
@@ -168,11 +162,9 @@ class Inventories
             {
                 if (equipped_items[i].item_slot == "finger")
                 {
-                    std::cout << "Adding 1 to fingers full...\n";
                     fingers_full++;
                 }
             }
-            std::cout << fingers_full << std::endl;
             return fingers_full;
         }
         
@@ -180,59 +172,63 @@ class Inventories
         {
             if(equipped_items.size() > 0) //checking if vector has any objects or if it is empty. 
             {
-                int i;
                 int size = equipped_items.size();
                 int hands_full = num_hands_full(size);
                 int fingers_full = num_fingers_full(size);
-                std::string slot_holder = item_to_equip.item_slot;
-                std::cout << "Size: " << size << std::endl;
-                bool flag = true;
+                //std::string slot_holder = item_to_equip.item_slot;
 
-                for (i = 0; i < size; i++)
+                if (item_to_equip.item_slot == "1-handed")
                 {
-                    //compare item handedness///////////////////////////////////////////////////
-                    //if (equipped_items[i].item_slot == "1-handed" && hands_full < 2)
-                    //{
-                    //    flag = true;
-                    //}
-                    if (equipped_items[i].item_slot == "1-handed" && hands_full >= 2)
+                    if(hands_full >= 2)
                     {
-                        flag = false;
+                        return false;
                     }
-                    //else if (equipped_items[i].item_slot == "2-handed" && hands_full == 0)
-                    //{
-                    //    flag = true;
-                    //}
-                    else if (equipped_items[i].item_slot == "2-handed" && hands_full != 0)
+                    else
                     {
-                        std::cout << "hands_full equalzz: " << hands_full << std::endl;
-                        flag = false;
-                    }
-                    //compare ring slots///////////////////////////////////////////////////////
-                    //if (equipped_items[i].item_slot == "finger" && fingers_full < 2)
-                    //{
-                    //    std::cout << "Slot 1: " << equipped_items[i].item_slot << item_to_equip.item_slot << std::endl;
-                    //    flag = true;
-                    //}
-                    else if (equipped_items[i].item_slot == "finger" && fingers_full > 1)
-                    {
-                        std::cout << "Slot 2: " << equipped_items[i].item_slot << item_to_equip.item_slot << std::endl;
-                        flag = false;
-                    }
-                    //compare item slot names///////////////////////////////////////////////////
-                    //else if (equipped_items[i].item_slot != item_to_equip.item_slot)
-                    //{
-                    //    std::cout << "Slot 3: " << equipped_items[i].item_slot << item_to_equip.item_slot << std::endl;
-                    //    flag = true;
-                    //}
-                    if (equipped_items[i].item_slot == item_to_equip.item_slot)
-                    {
-                        std::cout << "Slot 4: " << equipped_items[i].item_slot << item_to_equip.item_slot << std::endl;
-                        flag = false;
+                        return true;
                     }
                 }
-                std::cout << "No false flags... " << std::endl;
-                return flag;
+
+                else if (item_to_equip.item_slot == "2-handed")
+                {
+                    if(hands_full != 0)
+                    {
+                        return false;    
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+
+                else if (item_to_equip.item_slot == "finger")
+                {
+                    if(fingers_full > 1)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    int i;
+                    bool flag;
+                    for (i = 0; i < size; i++)
+                    {
+                        if (equipped_items[i].item_slot == item_to_equip.item_slot)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            flag = true;
+                        }
+                    }
+                    return flag;
+                }
             }
             else //this should return true bc there are no objects to compare. Slot is available.
             {
@@ -295,25 +291,25 @@ void Inventories::assign_inventory()
 {
 //paramaters are: "name", "class" (weapon, armour, jewelry), "slot" (1-handed, 2-handed, body), max_health, atk_dmg
 //use: fill_inventory("name"            , 't', "slot",   0,    0);
-    fill_inventory("Short Sword"            , "weapon",  "1-handed",   0,    3);
-    fill_inventory("Large Axe"              , "weapon",  "2-handed",   0,    9);
-    fill_inventory("Silver Axe"             , "weapon",  "2-handed",   0,    8);
-    fill_inventory("Spiked Shield"          , "weapon",  "1-handed",   5,    2);
-    fill_inventory("The Butcher's Cleaver"  , "weapon",  "1-handed",   0,   29);
-    //fill_inventory("Amulet1"                , "jewelry", "neck",       7,    6);
-    //fill_inventory("Amulet2"                , "jewelry", "neck",       7,    6);
-    //fill_inventory("Amulet3"                , "jewelry", "neck",       7,    6);
-    //fill_inventory("Holy Chainmail"         , "armour",  "body",      16,    0);
-    //fill_inventory("Breastplate"            , "armour",  "body",       5,    2);
-    //fill_inventory("Tyrael's Might"         , "armour",  "body",       5,    2);
-    //fill_inventory("The One Ring"           , "ring",  "finger",       5,    2);
-    //fill_inventory("The Second Ring"        , "ring",  "finger",       6,    2);
-    //fill_inventory("The Third Ring"         , "ring",  "finger",       5,    4);
-    //fill_inventory("Magefist"               , "armour",  "gloves",       5,    2);
-    //fill_inventory("Spiked Gloves"          , "armour",  "gloves",       5,    2);
-    //fill_inventory("Iron Fist"              , "armour",  "gloves",       5,    2);
-    //fill_inventory("Spiked Boots"           , "armour",  "boots",       5,    2);
-    //fill_inventory("Iron Boots"             , "armour",  "boots",       5,    2);
-    //fill_inventory("Booties"                , "armour",  "boots",       5,    2);
+    fill_inventory("Short Sword"            , "weapon" ,  "1-handed",       0,    3);
+    fill_inventory("Large Axe"              , "weapon" ,  "2-handed",       0,    9);
+    fill_inventory("Silver Axe"             , "weapon" ,  "2-handed",       0,    8);
+    fill_inventory("Spiked Shield"          , "weapon" ,  "1-handed",       5,    2);
+    fill_inventory("The Butcher's Cleaver"  , "weapon" ,  "1-handed",       0,   29);
+    fill_inventory("Amulet1"                , "jewelry",  "neck"    ,       7,    6);
+    fill_inventory("Amulet2"                , "jewelry",  "neck"    ,       7,    6);
+    fill_inventory("Amulet3"                , "jewelry",  "neck"    ,       7,    6);
+    fill_inventory("Holy Chainmail"         , "armour" ,  "body"    ,      16,    0);
+    fill_inventory("Breastplate"            , "armour" ,  "body"    ,       5,    2);
+    fill_inventory("Tyrael's Might"         , "armour" ,  "body"    ,       5,    2);
+    fill_inventory("The One Ring"           , "ring"   ,  "finger"  ,       5,    2);
+    fill_inventory("The Second Ring"        , "ring"   ,  "finger"  ,       6,    2);
+    fill_inventory("The Third Ring"         , "ring"   ,  "finger"  ,       5,    4);
+    fill_inventory("Magefist"               , "armour" ,  "gloves"  ,       5,    2);
+    fill_inventory("Spiked Gloves"          , "armour" ,  "gloves"  ,       5,    2);
+    fill_inventory("Iron Fist"              , "armour" ,  "gloves"  ,       5,    2);
+    fill_inventory("Spiked Boots"           , "armour" ,  "boots"   ,       5,    2);
+    fill_inventory("Iron Boots"             , "armour" ,  "boots"   ,       5,    2);
+    fill_inventory("Booties"                , "armour" ,  "boots"   ,       5,    2);
 }   
 
