@@ -1,0 +1,99 @@
+#include <iostream>
+#include <vector>
+
+class Inventories;
+struct Scrolls
+{
+    private:
+    protected:
+        std::string name;
+        int ID;
+    public:
+        Scrolls(std::string constr_name, int constr_ID){name = constr_name; ID = constr_ID;}
+        friend class Inventories;
+};
+
+class Inventories
+{
+    private:
+        int scrolls_held;
+        int index_already_held_1;
+        int index_already_held_2;
+        int index_already_held_3;
+        int index_already_held_4;
+        int index_already_held_5;
+        int index_already_held_6;
+        int index_already_held_7;
+        int index_already_held_8;
+        int index_already_held_9;
+    protected:
+        std::vector<Scrolls> all_scrolls;
+        std::vector<Scrolls> held_scrolls;
+    public:
+        void design_all_scrolls(std::string name, int this_ID)
+        {
+            Scrolls new_scroll(name, this_ID);
+            all_scrolls.push_back(new_scroll);
+        }
+        void fill_all_scrolls()
+        {
+            design_all_scrolls("Scroll of Fireball",     1);
+            design_all_scrolls("Scroll of Lightning",    2);
+            design_all_scrolls("Scroll of Inferno",      3);
+            design_all_scrolls("Scroll of Fireball",     1);
+            design_all_scrolls("Scroll of Healing",      4);
+            design_all_scrolls("Scroll of Lightning",    2);
+            design_all_scrolls("Scroll of Identify",     5);
+            design_all_scrolls("Scroll of Inferno",      3);
+            design_all_scrolls("Scroll of Identify",     5);
+        }
+        void print_all_scrolls()
+        {
+            int size = all_scrolls.size();
+            for(int i = 0; i < size; i++)
+            {
+                std::cout << all_scrolls[i].name << std::endl;
+            }
+            print_num_scrolls_held();
+        }
+        void count_scrolls_held()
+        {
+            scrolls_held = 0;
+            int size = all_scrolls.size();
+            for(int i = 0; i < size; i++)
+            {
+                scrolls_held++;
+            }
+        }
+        void print_num_scrolls_held()
+        {
+            count_scrolls_held();
+            std::cout << scrolls_held << " scrolls held." << std::endl;
+        }
+        
+        void see_if_this_scroll_is_held(int new_scroll_id)
+        {
+            int size = all_scrolls.size();
+            for(int i = 0; i < size; i++)
+            {
+                if(all_scrolls[i].ID == new_scroll_id)
+                {
+                    std::cout << all_scrolls[i].ID << std::endl;
+                }
+            }
+        }
+};
+
+
+int main()
+{
+    Inventories belt_1;
+    belt_1.fill_all_scrolls();
+    belt_1.print_all_scrolls();
+    belt_1.see_if_this_scroll_is_held(3);
+
+    return 0;
+}
+
+
+
