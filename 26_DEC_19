@@ -149,6 +149,7 @@ public:
 	{
 		std::cout << "-------------------------------" << "\n";
 		std::cout << "Here is a list of all items in the game: \n"; //for dev purposes
+		std::cout << "-------------------------------" << "\n";
 		int size = inventory.size();
 		for (int i = 0; i < size; i++)
 		{
@@ -160,6 +161,7 @@ public:
 	{
 		std::cout << "-------------------------------" << "\n";
 		std::cout << "Here is a list of all scrolls in the game: \n"; //for dev purposes
+		std::cout << "-------------------------------" << "\n";
 		int size = all_scrolls.size();
 		for (int i = 0; i < size; i++)
 		{
@@ -920,18 +922,33 @@ public:
 //main//////////////////////////////////////////
 int main()
 {
-	//Inventories inv;
-	//inv.assign_inventory();
-	//inv.display_inventory();
-	//inv.num_drop_loot(12);
-	//inv.display_equipped();
-	
+	Inventories inv;
 	Inventories scrl;
 	scrl.assign_all_scrolls();
-	scrl.display_all_scrolls();
+	inv.assign_inventory();
+	//inv.display_inventory();
+	//scrl.display_all_scrolls();
 	
-	scrl.num_drop_scrolls(8);
+	inv.num_drop_loot(2);
+	scrl.num_drop_scrolls(2);
+	inv.num_drop_loot(2);
+	scrl.num_drop_scrolls(2);
+	inv.num_drop_loot(2);
+	scrl.num_drop_scrolls(2);
+	inv.num_drop_loot(2);
+	scrl.num_drop_scrolls(2);
 	
+	inv.display_equipped();
+	scrl.display_held_scrolls();
+	
+	inv.num_drop_loot(2);
+	scrl.num_drop_scrolls(2);
+	inv.num_drop_loot(2);
+	scrl.num_drop_scrolls(2);
+	inv.num_drop_loot(2);
+	scrl.num_drop_scrolls(2);
+	
+	inv.display_equipped();
 	scrl.display_held_scrolls();
 	
 
