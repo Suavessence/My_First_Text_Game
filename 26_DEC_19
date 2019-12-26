@@ -1,0 +1,982 @@
+//#include <pch.h>
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <random> //for RNG
+#include <cctype> //for toupper
+
+/*
+	Next up:
+	
+*/
+//global RNG stuff///////////////////////////////
+std::random_device dev;
+std::mt19937 rng(dev());
+
+//classes///////////////////////////////////////////
+class Inventories;
+struct Items
+{
+private:
+protected:
+	//item name and meta data///////////////////////////
+	std::string name;
+	std::string type;
+	std::string slot;
+	//item attributes//////////////////////////////////
+	int max_health;
+	int atk_dmg;
+
+public:
+	//can create different constructors later on, depending on types of items desired.
+	Items(std::string name_constrArg, std::string type_constrArg, std::string slot_constrArg, int max_health_constrArg, int atk_dmg_constrArg)
+	{
+		name = name_constrArg;
+		type = type_constrArg;
+		slot = slot_constrArg;
+		max_health = max_health_constrArg;
+		atk_dmg = atk_dmg_constrArg;
+	}
+	friend class Inventories;
+};
+
+struct Scrolls
+{
+private:
+protected:
+	//item name and meta data///////////////////////////
+	std::string name;
+
+	//item attributes//////////////////////////////////
+	int max_health;
+	int atk_dmg;
+
+public:
+	//can create different constructors later on, depending on types of scrolls desired.
+	Scrolls(std::string name_constrArg, int max_health_constrArg, int atk_dmg_constrArg)
+	{
+		name = name_constrArg;
+		max_health = max_health_constrArg;
+		atk_dmg = atk_dmg_constrArg;
+	}
+	friend class Inventories;
+};
+
+class Inventories
+{
+private:
+
+	//inventory stuff
+	//these indices allow the swapping of items
+	int index_first_equipped_weapon; 
+	int index_second_equipped_weapon;
+	int index_first_equipped_ring;
+	int index_second_equipped_ring;
+	int index_equipped_amulet;
+	int index_equipped_belt;
+	int index_equipped_boots;
+	int index_equipped_chest;
+	int index_equipped_gloves;
+	int index_equipped_helmet;
+
+	//scrolls stuff
+	
+
+protected:
+	std::vector<Items> inventory; // houses all items
+	std::vector<Items> equipped_items; //items equipped on player
+	std::vector<Scrolls> all_scrolls; // houses all scrolls
+	std::vector<Scrolls> held_scrolls; //scrolls the player holds
+public:
+	void assign_inventory();
+	//use "assign_inventory()" to actually design and create items; calls a bunch of "fill_inventory()";
+
+	void fill_inventory(std::string name_constrArg, std::string type_constrArg, std::string slot_constrArg, int max_health_constrArg, int atk_dmg_constrArg)
+	{
+		//"fill_inventory()" is called by "assign_inventory()" to: 1. Instantiate new "Items" objects with "Items" constructor; 
+		//and 2. Push them into an inventory vector
+		Items new_item(name_constrArg, type_constrArg, slot_constrArg, max_health_constrArg, atk_dmg_constrArg);
+		inventory.push_back(new_item);
+	}
+
+	void assign_all_scrolls();
+	//use "assign_all_scrolls()" to actually design and create scrolls; calls a bunch of "fill_all_scrolls()";
+
+	void fill_all_scrolls(std::string name_constrArg, int max_health_constrArg, int atk_dmg_constrArg)
+	{
+		//"fill_all_scrolls()" is called by "assign_all_scrolls()" to: 1. Instantiate new "Items" objects with "Items" constructor; 
+		//and 2. Push them into an inventory vector
+		Scrolls new_scroll(name_constrArg, max_health_constrArg, atk_dmg_constrArg);
+		all_scrolls.push_back(new_scroll);
+	}
+
+	void equip_item(Items& item_to_equip)
+	{
+		//"equip_item()" copies an object from "std::vector<Items> inventory" into "std::vector<Items> equipped_items"
+		//it is passed a single "Items" object reference
+		equipped_items.push_back(item_to_equip);
+		std::cout << "You equipped " << item_to_equip.name << "!" << std::endl;
+	}
+
+	void hold_scroll(Scrolls& scroll_to_hold)
+	{
+		//"equip_item()" copies an object from "std::vector<Items> inventory" into "std::vector<Items> equipped_items"
+		//it is passed a single "Items" object reference
+		held_scrolls.push_back(scroll_to_hold);
+		std::cout << "You hold " << scroll_to_hold.name << "!" << std::endl;
+	}
+
+	//print_item handles all the cout for a printed item; to be eventually moved to its own displays class
+	void print_item(Items& printed_item)
+	{
+		std::cout << printed_item.name << "\n";
+		std::cout << printed_item.type << " : " << printed_item.slot << "\n";
+		std::cout << "max health: +" << printed_item.max_health << "\n";
+		std::cout << "attack dmg: +" << printed_item.atk_dmg << "\n";
+		std::cout << "-------------------------------" << "\n";
+	}
+
+	void print_scroll(Scrolls& printed_scroll)
+	{
+		std::cout << printed_scroll.name << "\n";
+		std::cout << "max health: +" << printed_scroll.max_health << "\n";
+		std::cout << "attack dmg: +" << printed_scroll.atk_dmg << "\n";
+		std::cout << "-------------------------------" << "\n";
+	}
+
+	void display_inventory()
+	{
+		std::cout << "-------------------------------" << "\n";
+		std::cout << "Here is a list of all items in the game: \n"; //for dev purposes
+		int size = inventory.size();
+		for (int i = 0; i < size; i++)
+		{
+			print_item(inventory[i]);
+		}
+	}
+
+	void display_all_scrolls()
+	{
+		std::cout << "-------------------------------" << "\n";
+		std::cout << "Here is a list of all scrolls in the game: \n"; //for dev purposes
+		int size = all_scrolls.size();
+		for (int i = 0; i < size; i++)
+		{
+			print_scroll(all_scrolls[i]);
+		}
+	}
+
+	void display_equipped()
+	{
+		std::cout << "-------------------------------" << "\n";
+		std::cout << "Here is what's equipped: \n"; //for dev purposes
+		std::cout << "-------------------------------" << "\n";
+		int size = equipped_items.size();
+		for (int i = 0; i < size; i++)
+		{
+			print_item(equipped_items[i]);
+		}
+	}
+
+	void display_held_scrolls()
+	{
+		std::cout << "-------------------------------" << "\n";
+		std::cout << "Here are your held scrolls: \n"; //for dev purposes
+		std::cout << "-------------------------------" << "\n";
+		int size = held_scrolls.size();
+		for (int i = 0; i < size; i++)
+		{
+			print_scroll(held_scrolls[i]);
+		}
+	}
+
+	//use rng to generate and return a random int (an index number) from 0 to inventory size; can be passed to function for loot drops or equipping item
+	int return_random_item_index()
+	{
+		int max = (inventory.size() - 1);
+		std::uniform_int_distribution<std::mt19937::result_type> dist6(0, max); // distribution in range (min, max)
+		return dist6(rng);
+	}
+
+	int return_random_scroll_index()
+	{
+		int max = (all_scrolls.size() - 1);
+		std::uniform_int_distribution<std::mt19937::result_type> dist6(0, max); // distribution in range (min, max)
+		return dist6(rng);
+	}
+
+	//updates the values for all equipped item indexes (the class variables)
+	void update_index_equipped_items()
+	{
+		bool first_ring_index_updated = false;
+		bool first_weapon_index_updated = false;
+		int size = equipped_items.size();
+		for (int i = 0; i < size; i++)
+		{
+			if (equipped_items[i].slot == "1-handed")
+			{
+				if (first_weapon_index_updated == false)
+				{
+					first_weapon_index_updated = true;
+					index_first_equipped_weapon = i;
+				}
+				else if (first_weapon_index_updated == true)
+				{
+					index_second_equipped_weapon = i;
+				}
+			}
+
+			else if (equipped_items[i].slot == "2-handed")
+			{
+				index_first_equipped_weapon = i;
+			}
+
+			else if (equipped_items[i].slot == "ring")
+			{
+				if (first_ring_index_updated == false)
+				{
+					first_ring_index_updated = true;
+					index_first_equipped_ring = i;
+				}
+				else if (first_ring_index_updated == true)
+				{
+					index_second_equipped_ring = i;
+				}
+			}
+
+			else if (equipped_items[i].slot == "amulet")
+			{
+				index_equipped_amulet = i;
+			}
+
+			else if (equipped_items[i].slot == "belt")
+			{
+				index_equipped_belt = i;
+			}
+
+			else if (equipped_items[i].slot == "boots")
+			{
+				index_equipped_boots = i;
+			}
+
+			else if (equipped_items[i].slot == "chest")
+			{
+				index_equipped_chest = i;
+			}
+
+			else if (equipped_items[i].slot == "gloves")
+			{
+				index_equipped_gloves = i;
+			}
+
+			else if (equipped_items[i].slot == "helmet")
+			{
+				index_equipped_helmet = i;
+			}
+		}
+	}
+
+	void update_index_held_scrolls()
+	{
+
+	}
+
+	//calls "return_random_item_index()" to assign an index for "std::vector<Items> inventory"
+	//then it displays that item's info (this item is locally called "inventory[i]"); then it calls "is_slot_available()"; 
+	//if yes, asks player if they want to equip item; if yes, if yes, calls "equip_item()"
+	//if no, asks player if they want to replace an equipped item(s); assigns the indices of all equipped items, then calls "replace_item()"
+	void drop_loot()
+	{
+		int i = return_random_item_index();
+		std::cout << "-------------------------------" << "\n";
+		std::cout << "Loot dropped!\n";  //for dev purposes
+		std::cout << "-------------------------------" << "\n";
+		print_item(inventory[i]);
+
+		bool slot_available = is_slot_available(inventory[i]);
+		if (slot_available == true)
+		{
+			std::cout << "Item slot is available!\n"; //dev
+			choice_equip_item(inventory[i]);
+		}
+		else if (slot_available == false)
+		{
+			std::cout << "Item slot is full.\n"; //dev
+			update_index_equipped_items();
+			choice_replace_item(inventory[i]);
+		}
+		else {}
+	}
+	
+	void drop_scroll()
+	{
+		int i = return_random_scroll_index();
+		std::cout << "-------------------------------" << "\n";
+		std::cout << "Scroll dropped!\n";  //for dev purposes
+		std::cout << "-------------------------------" << "\n";
+		print_scroll(all_scrolls[i]);
+
+		if (scrolls_are_full() == false)
+		{
+			std::cout << "Scroll slot is available!\n"; //dev
+			choice_hold_scroll(all_scrolls[i]);
+		}
+		else if (scrolls_are_full() == true)
+		{
+			std::cout << "Scrolls are full.\n"; //dev
+			choice_replace_scroll(all_scrolls[i]);
+		}
+		else {}
+	}
+
+    bool scrolls_are_full()
+    {
+        if (held_scrolls.size() > 4)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+	//determines number of hands full for "drop_loot()" to determine if a weapon can be immediately equipped or if it would require an item replacement
+	//also captures the index of any equipped weapons.
+	int num_hands_full(int size)
+	{
+		int i;
+		int hands_full = 0;
+
+		for (i = 0; i < size; i++)
+		{
+			if (equipped_items[i].slot == "1-handed")
+			{
+				hands_full++;
+			}
+			else if (equipped_items[i].slot == "2-handed")
+			{
+				hands_full += 2;
+			}
+		}
+		return hands_full;
+	}
+
+	//similar to num_hands_full(), returns the number of rings that are equipped.
+	int num_rings_full(int size)
+	{
+		int i;
+		int rings_full = 0;
+		for (i = 0; i < size; i++)
+		{
+			if (equipped_items[i].slot == "ring")
+			{
+				rings_full++;
+			}
+		}
+		return rings_full;
+	}
+
+	//called by "drop_loot"; checks if an item slot is available by comparing number of hands and rings full (for weapons and rings), and for everything else, if the new item "slot" matches the
+	//equpped slot. Calls "num_hands_full()"" and "num_rings_full()"
+	bool is_slot_available(Items& item_to_equip)
+	{
+		if (equipped_items.size() > 0) //checking if vector has any objects or if it is empty. 
+		{
+			int size = equipped_items.size();
+			int hands_full = num_hands_full(size);
+			int rings_full = num_rings_full(size);
+			//std::string slot_holder = item_to_equip.slot;
+
+			if (item_to_equip.slot == "1-handed")
+			{
+				if (hands_full >= 2)
+				{
+					return false;
+				}
+				else
+				{
+					return true;
+				}
+			}
+
+			else if (item_to_equip.slot == "2-handed")
+			{
+				if (hands_full != 0)
+				{
+					return false;
+				}
+				else
+				{
+					return true;
+				}
+			}
+
+			else if (item_to_equip.slot == "ring")
+			{
+				if (rings_full > 1)
+				{
+					return false;
+				}
+				else
+				{
+					return true;
+				}
+			}
+			else //for all non-weapon/ring items
+			{
+				int i;
+				bool flag;
+				for (i = 0; i < size; i++)
+				{
+					if (equipped_items[i].slot == item_to_equip.slot)
+					{
+						return false;
+					}
+					else
+					{
+						flag = true;
+					}
+				}
+				return flag;
+			}
+		}
+		else //this should return true bc there are no objects to compare. Slot is available.
+		{
+			return true;
+		}
+	}
+
+	//checks if a 2-handed weapon is equipped. Useful for determining whether to offer the user the choice of replacing only 1 or 2 weapons
+	//when equipping a new one
+	bool is_2handed_equipped()
+	{
+		int i;
+		int size = equipped_items.size();
+		for (i = 0; i < size; i++)
+		{
+			if (equipped_items[i].slot == "2-handed")
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+
+	//basic get yes or no char and returns it
+	char get_choice_Y_or_N()
+	{
+		char choice;
+		do
+		{
+			std::cout << "Y or N?" << std::endl;
+			std::cin.get(choice);
+			std::cin.ignore();
+			choice = toupper(choice);
+		} while (choice != 'Y' && choice != 'N');
+		return choice;
+	}
+	//"choice_equip_item()" is called by "drop_loot()"; it then calls "equip_item()" if player chooses Yes
+	void choice_equip_item(Items& item_to_equip)
+	{
+		std::cout << "Do you wish to equip " << item_to_equip.name << "?" << std::endl;
+		char choice = get_choice_Y_or_N();
+
+		if (choice == 'Y')
+		{
+			equip_item(item_to_equip);
+		}
+		else
+		{
+			std::cout << "You choose not to equip " << item_to_equip.name << std::endl;
+		}
+	}
+	
+	void choice_hold_scroll(Scrolls& scroll_to_hold)
+	{
+	    std::cout << "Do you wish to hold " << scroll_to_hold.name << "?" << std::endl;
+		char choice = get_choice_Y_or_N();
+
+		if (choice == 'Y')
+		{
+			hold_scroll(scroll_to_hold);
+		}
+		else
+		{
+			std::cout << "You choose not to hold" << scroll_to_hold.name << std::endl;
+		}
+	}
+
+	//replaces a currently equipped item with a new one; called by "choice_replace_item()"
+	void replace_item(int index, Items& new_item)
+	{
+		equipped_items[index] = new_item;
+	}
+	
+	void replace_scroll(int index, Scrolls& scroll_to_hold)
+	{
+	    held_scrolls[index] = scroll_to_hold;
+	}
+
+	//interface for user to choose to replace a currently equipped item with a new one.
+	//includes logic to determine which choices to offer user
+	//If yes, calls "replace_item()"; called by drop_loot when loot drops and no slot is available
+	void choice_replace_item(Items& new_item)
+	{
+		char choice;
+		int size = equipped_items.size();
+
+		if (new_item.slot == "1-handed")
+		{
+			if (is_2handed_equipped() == false)
+			{
+				std::cout << "Which item do you wish to replace?";
+				std::cout << "\n1. " << equipped_items[index_first_equipped_weapon].name;
+				std::cout << "\n2. " << equipped_items[index_second_equipped_weapon].name;
+				std::cout << "\n3. None (discard loot)" << std::endl;
+
+				do
+				{
+					std::cout << "Enter choice.\n";
+					std::cin.get(choice);
+					std::cin.ignore();
+				} while (choice != '1' && choice != '2' && choice != '3');
+
+				if (choice == '1')
+				{
+					std::cout << "Replaced " << equipped_items[index_first_equipped_weapon].name;
+					std::cout << " with " << new_item.name << "." << std::endl;
+
+					replace_item(index_first_equipped_weapon, new_item);
+				}
+				else if (choice == '2')
+				{
+					std::cout << "Replaced " << equipped_items[index_second_equipped_weapon].name;
+					std::cout << " with " << new_item.name << "." << std::endl;
+
+					replace_item(index_second_equipped_weapon, new_item);
+				}
+				else if (choice == '3')
+				{
+					std::cout << "No replacement. Moving on." << std::endl;
+				}
+			}
+			
+			else if (is_2handed_equipped() == true)
+			{
+				std::cout << "Do you wish to replace " << equipped_items[index_first_equipped_weapon].name;
+				std::cout << " with " << new_item.name << "?" << std::endl;
+
+				choice = get_choice_Y_or_N();
+
+				if (choice == 'Y')
+				{
+					std::cout << "Replaced " << equipped_items[index_first_equipped_weapon].name;
+					std::cout << " with " << new_item.name << "." << std::endl;
+
+					replace_item(index_first_equipped_weapon, new_item);
+
+				}
+				else if (choice == 'N')
+				{
+					std::cout << "No replacement. Moving on." << std::endl;
+				}
+			}
+		}
+
+		else if (new_item.slot == "2-handed")
+		{
+			if (is_2handed_equipped() == false) //there are 1-handed weapons equipped
+			{
+				int hands_full = num_hands_full(size);
+
+				if (hands_full == 1) //only 1 1-handed weapon is equipped
+				{
+					std::cout << "Do you wish to replace " << equipped_items[index_first_equipped_weapon].name;
+					std::cout << " with " << new_item.name << "?" << std::endl;
+
+					choice = get_choice_Y_or_N();
+
+					if (choice == 'Y')
+					{
+						std::cout << "Replaced " << equipped_items[index_first_equipped_weapon].name;
+						std::cout << " with " << new_item.name << "." << std::endl;
+
+						replace_item(index_first_equipped_weapon, new_item);
+
+					}
+					else if (choice == 'N')
+					{
+						std::cout << "No replacement. Moving on." << std::endl;
+					}
+				}
+				else if (hands_full == 2) //2 1-handed weapons are equipped
+				{
+					std::cout << "Do you wish to replace " << equipped_items[index_first_equipped_weapon].name;
+					std::cout << " and " << equipped_items[index_second_equipped_weapon].name;
+					std::cout << "\nwith " << new_item.name << "?" << std::endl;
+
+					char choice = get_choice_Y_or_N();
+
+					if (choice == 'Y')
+					{
+						std::cout << "Replaced " << equipped_items[index_first_equipped_weapon].name;
+						std::cout << " with " << new_item.name << "." << std::endl;
+
+						replace_item(index_first_equipped_weapon, new_item); //assign 2-h weapon to first index
+						unequip_item(index_second_equipped_weapon); //delete second index (so that a 2-h and 1-h weapon are not both equipped)
+					}
+					else if (choice == 'N')
+					{
+						std::cout << "No replacement. Moving on." << std::endl;
+					}
+				}
+			}
+			else //there is a 2-handed weapon equipped
+			{
+				std::cout << "Do you wish to replace " << equipped_items[index_first_equipped_weapon].name;
+				std::cout << " with " << new_item.name << "?" << std::endl;
+
+				choice = get_choice_Y_or_N();
+
+				if (choice == 'Y')
+				{
+					std::cout << "Replaced " << equipped_items[index_first_equipped_weapon].name;
+					std::cout << " with " << new_item.name << "." << std::endl;
+
+					replace_item(index_first_equipped_weapon, new_item);
+				}
+				else if (choice == 'N')
+				{
+					std::cout << "No replacement. Moving on." << std::endl;
+				}
+			}
+		}
+		else if (new_item.slot == "ring")
+		{
+			std::cout << "Which item do you wish to replace?";
+			std::cout << "\n1. " << equipped_items[index_first_equipped_ring].name;
+			std::cout << "\n2. " << equipped_items[index_second_equipped_ring].name;
+			std::cout << "\n3. None (discard loot)" << std::endl;
+
+			do
+			{
+				std::cout << "Enter choice.\n";
+				std::cin.get(choice);
+				std::cin.ignore();
+			} while (choice != '1' && choice != '2' && choice != '3');
+
+			if (choice == '1')
+			{
+				std::cout << "Replaced " << equipped_items[index_first_equipped_ring].name;
+				std::cout << " with " << new_item.name << "." << std::endl;
+
+				replace_item(index_first_equipped_ring, new_item);
+			}
+			else if (choice == '2')
+			{
+				std::cout << "Replaced " << equipped_items[index_second_equipped_ring].name;
+				std::cout << " with " << new_item.name << "." << std::endl;
+
+				replace_item(index_second_equipped_ring, new_item);
+			}
+			else if (choice == '3')
+			{
+				std::cout << "No replacement. Moving on." << std::endl;
+			}
+		}
+		else if (new_item.slot == "amulet")
+		{
+			std::cout << "Do you wish to replace " << equipped_items[index_equipped_amulet].name;
+			std::cout << " with " << new_item.name << "?" << std::endl;
+
+			choice = get_choice_Y_or_N();
+
+			if (choice == 'Y')
+			{
+				std::cout << "Replaced " << equipped_items[index_equipped_amulet].name;
+				std::cout << " with " << new_item.name << "." << std::endl;
+
+				replace_item(index_equipped_amulet, new_item);
+			}
+			else if (choice == 'N')
+			{
+				std::cout << "No replacement. Moving on." << std::endl;
+			}
+		}
+
+		else if (new_item.slot == "belt")
+		{
+			std::cout << "Do you wish to replace " << equipped_items[index_equipped_belt].name;
+			std::cout << " with " << new_item.name << "?" << std::endl;
+
+			choice = get_choice_Y_or_N();
+
+			if (choice == 'Y')
+			{
+				std::cout << "Replaced " << equipped_items[index_equipped_belt].name;
+				std::cout << " with " << new_item.name << "." << std::endl;
+
+				replace_item(index_equipped_belt, new_item);
+			}
+			else if (choice == 'N')
+			{
+				std::cout << "No replacement. Moving on." << std::endl;
+			}
+		}
+
+		else if (new_item.slot == "boots")
+		{
+			std::cout << "Do you wish to replace " << equipped_items[index_equipped_boots].name;
+			std::cout << " with " << new_item.name << "?" << std::endl;
+
+			choice = get_choice_Y_or_N();
+
+			if (choice == 'Y')
+			{
+				std::cout << "Replaced " << equipped_items[index_equipped_boots].name;
+				std::cout << " with " << new_item.name << "." << std::endl;
+
+				replace_item(index_equipped_boots, new_item);
+			}
+			else if (choice == 'N')
+			{
+				std::cout << "No replacement. Moving on." << std::endl;
+			}
+		}
+
+		else if (new_item.slot == "chest")
+		{
+			std::cout << "Do you wish to replace " << equipped_items[index_equipped_chest].name;
+			std::cout << " with " << new_item.name << "?" << std::endl;
+
+			choice = get_choice_Y_or_N();
+
+			if (choice == 'Y')
+			{
+				std::cout << "Replaced " << equipped_items[index_equipped_chest].name;
+				std::cout << " with " << new_item.name << "." << std::endl;
+
+				replace_item(index_equipped_chest, new_item);
+			}
+			else if (choice == 'N')
+			{
+				std::cout << "No replacement. Moving on." << std::endl;
+			}
+		}
+
+		else if (new_item.slot == "gloves")
+		{
+			std::cout << "Do you wish to replace " << equipped_items[index_equipped_gloves].name;
+			std::cout << " with " << new_item.name << "?" << std::endl;
+
+			choice = get_choice_Y_or_N();
+
+			if (choice == 'Y')
+			{
+				std::cout << "Replaced " << equipped_items[index_equipped_gloves].name;
+				std::cout << " with " << new_item.name << "." << std::endl;
+
+				replace_item(index_equipped_gloves, new_item);
+			}
+			else if (choice == 'N')
+			{
+				std::cout << "No replacement. Moving on." << std::endl;
+			}
+		}
+
+		else if (new_item.slot == "helmet")
+		{
+			std::cout << "Do you wish to replace " << equipped_items[index_equipped_helmet].name;
+			std::cout << " with " << new_item.name << "?" << std::endl;
+
+			choice = get_choice_Y_or_N();
+
+			if (choice == 'Y')
+			{
+				std::cout << "Replaced " << equipped_items[index_equipped_helmet].name;
+				std::cout << " with " << new_item.name << "." << std::endl;
+
+				replace_item(index_equipped_helmet, new_item);
+			}
+			else if (choice == 'N')
+			{
+				std::cout << "No replacement. Moving on." << std::endl;
+			}
+		}
+	}
+
+    void choice_replace_scroll(Scrolls& scroll_to_hold)
+    {
+        	std::cout << "Which scroll do you wish to replace?\n";
+        	int size = held_scrolls.size();
+        	int i;
+        	char choice;
+        	for (i = 0; i < size; i++)
+        	{
+        	    std::cout << (i + 1) << ". " << held_scrolls[i].name << "\n";
+        	}
+			std::cout << (i + 1) << ". None (discard loot)" << std::endl;
+
+			do
+			{
+				std::cout << "Enter choice.\n";
+				std::cin.get(choice);
+				std::cin.ignore();
+			} 
+			while (choice < '1' || choice > '6');
+
+			if (choice == '1')
+			{
+				std::cout << "Replaced " << held_scrolls[0].name;
+				std::cout << " with " << scroll_to_hold.name << "." << std::endl;
+
+				replace_scroll(0, scroll_to_hold);
+			}
+			else if (choice == '2')
+			{
+				std::cout << "Replaced " << held_scrolls[1].name;
+				std::cout << " with " << scroll_to_hold.name << "." << std::endl;
+
+				replace_scroll(1, scroll_to_hold);
+			}
+			else if (choice == '3')
+			{
+				std::cout << "Replaced " << held_scrolls[2].name;
+				std::cout << " with " << scroll_to_hold.name << "." << std::endl;
+
+				replace_scroll(2, scroll_to_hold);
+			}
+			else if (choice == '4')
+			{
+				std::cout << "Replaced " << held_scrolls[3].name;
+				std::cout << " with " << scroll_to_hold.name << "." << std::endl;
+
+				replace_scroll(3, scroll_to_hold);
+			}
+			else if (choice == '4')
+			{
+				std::cout << "Replaced " << held_scrolls[3].name;
+				std::cout << " with " << scroll_to_hold.name << "." << std::endl;
+
+				replace_scroll(3, scroll_to_hold);
+			}
+			else if (choice == '5')
+			{
+				std::cout << "Replaced " << held_scrolls[4].name;
+				std::cout << " with " << scroll_to_hold.name << "." << std::endl;
+
+				replace_scroll(4, scroll_to_hold);
+			}
+			else if (choice == '6')
+			{
+				std::cout << "No replacement.\n";
+			}
+    }
+
+	//logic to unequip an item; called by "choice_unequip_item()".
+	void unequip_item(int index)
+	{
+	    equipped_items.erase(equipped_items.begin()+index);
+	}
+	   
+	////user interface to choose whether to unequip an item; if yes, calls "unequip_item()"
+	bool choice_unequip_item(int index_item_to_unequip)
+	{
+		std::cout << "Do you wish to unequip " << equipped_items[index_item_to_unequip].name << " ?\n";
+		char choice = get_choice_Y_or_N();
+	    if(choice == 'Y')
+	    {
+	        unequip_item(index_item_to_unequip);
+	    }
+	    else
+	    {
+	        std::cout << equipped_items[index_item_to_unequip].name << " remains equipped." << std::endl;
+	    }
+	}
+
+	//just passes the number of times to call "drop_loot()" and then calls it that many times; RNG could be passed to it.
+	void num_drop_loot(int num_drops)
+	{
+		for (int i = 0; i < num_drops; i++)
+		{
+			drop_loot();
+		}
+	}
+	
+	void num_drop_scrolls(int num_drops)
+	{
+			for (int i = 0; i < num_drops; i++)
+		{
+			drop_scroll();
+		}
+	}
+};
+
+//main//////////////////////////////////////////
+int main()
+{
+	//Inventories inv;
+	//inv.assign_inventory();
+	//inv.display_inventory();
+	//inv.num_drop_loot(12);
+	//inv.display_equipped();
+	
+	Inventories scrl;
+	scrl.assign_all_scrolls();
+	scrl.display_all_scrolls();
+	
+	scrl.num_drop_scrolls(8);
+	
+	scrl.display_held_scrolls();
+	
+
+	return 0;
+}
+
+void Inventories::assign_inventory()
+{
+	//paramaters are: "name", "type" (weapon, armour, jewelry), "slot" (1-handed, 2-handed, body), max_health, atk_dmg
+	//use: fill_inventory("name"              , 't', "slot",   0,    0);
+
+	fill_inventory("Short Sword"            , "weapon", "1-handed", 0, 3);
+	fill_inventory("Large Axe"              , "weapon", "1-handed", 0, 9);
+	fill_inventory("Silver Axe"             , "weapon", "1-handed", 0, 8);
+	fill_inventory("Spiked Shield"          , "weapon", "2-handed", 5, 2);
+	fill_inventory("The Butcher's Cleaver"  , "weapon", "2-handed", 0, 29);
+	fill_inventory("The Skeleton Blade"     , "weapon", "2-handed", 0, 29);
+	fill_inventory("Amulet1"                , "jewelry",  "amulet"    ,       7,    6);
+	fill_inventory("Amulet2"                , "jewelry",  "amulet"    ,       7,    6);
+	fill_inventory("Amulet3"                , "jewelry",  "amulet"    ,       7,    6);
+	fill_inventory("Holy Chainmail"         , "armour" ,  "chest"    ,      16,    0);
+	fill_inventory("Breastplate"            , "armour" ,  "chest"    ,       5,    2);
+	fill_inventory("Tyrael's Might"         , "armour" ,  "chest"    ,       5,    2);
+	fill_inventory("The One Ring"           , "ring"   ,  "ring"  ,       5,    2);
+	fill_inventory("The Second Ring"        , "ring"   ,  "ring"  ,       6,    2);
+	fill_inventory("The Third Ring"         , "ring"   ,  "ring"  ,       5,    4);
+	fill_inventory("Magefist"               , "armour" ,  "gloves"  ,       5,    2);
+	fill_inventory("Spiked Gloves"          , "armour" ,  "gloves"  ,       5,    2);
+	fill_inventory("Iron Fist"              , "armour" ,  "gloves"  ,       5,    2);
+	fill_inventory("Spiked Boots"           , "armour" ,  "boots"   ,       5,    2);
+	fill_inventory("Iron Boots"             , "armour" ,  "boots"   ,       5,    2);
+	fill_inventory("Booties"                , "armour" ,  "boots"   ,       5,    2);
+	fill_inventory("Belt_1"                 , "armour" ,  "belt"   ,       5,    2);
+	fill_inventory("Belt_2"                 , "armour" ,  "belt"   ,       4,    1);
+	fill_inventory("Belt_3"                 , "armour" ,  "belt"   ,       4,    1);
+	fill_inventory("Helmet_1"               , "armour" ,  "helmet"   ,       4,    0);
+	fill_inventory("Helmet_2"               , "armour" ,  "helmet"   ,       5,    0);
+	fill_inventory("Helmet_3"               , "armour" ,  "helmet"   ,       6,    0);
+}
+
+void Inventories::assign_all_scrolls()
+{
+	fill_all_scrolls("Scroll of Fireball"       , 2, 3);
+	fill_all_scrolls("Scroll of Lightning"      , 2, 4);
+	fill_all_scrolls("Scroll of Healing"        , 5, 0);
+	fill_all_scrolls("Scroll of Ice Bolt"       , 6, 0);
+	fill_all_scrolls("Scroll of Shock Trap"     , 3, 0);
+}
