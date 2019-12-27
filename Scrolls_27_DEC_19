@@ -1,0 +1,306 @@
+//#include <pch.h>
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <random> //for RNG
+#include <cctype> //for toupper
+
+/*
+	Next up:
+	
+*/
+//global RNG stuff///////////////////////////////
+std::random_device dev;
+std::mt19937 rng(dev());
+
+//classes///////////////////////////////////////////
+class Scrolls_Class;
+
+struct Scrolls
+{
+private:
+protected:
+	//item name and meta data///////////////////////////
+	std::string name;
+
+	//item attributes//////////////////////////////////
+	int max_health;
+	int atk_dmg;
+
+public:
+	//can create different constructors later on, depending on types of scrolls desired.
+	Scrolls(std::string name_constrArg, int max_health_constrArg, int atk_dmg_constrArg)
+	{
+		name = name_constrArg;
+		max_health = max_health_constrArg;
+		atk_dmg = atk_dmg_constrArg;
+	}
+	friend class Scrolls_Class;
+};
+
+class Scrolls_Class
+{
+private:
+protected:
+	std::vector<Scrolls> all_scrolls; // houses all scrolls
+	std::vector<Scrolls> held_scrolls; //scrolls the player holds
+	
+public:
+
+	void assign_all_scrolls();
+	//use "assign_all_scrolls()" to actually design and create scrolls; calls a bunch of "fill_all_scrolls()";
+
+	void fill_all_scrolls(std::string name_constrArg, int max_health_constrArg, int atk_dmg_constrArg)
+	{
+		//"fill_all_scrolls()" is called by "assign_all_scrolls()" to: 1. Instantiate new "Scrolls" objects with "Scrolls" constructor; 
+		//and 2. Push them into a Scrolls_Class vector
+		Scrolls new_scroll(name_constrArg, max_health_constrArg, atk_dmg_constrArg);
+		all_scrolls.push_back(new_scroll);
+	}
+
+	void hold_scroll(Scrolls& scroll_to_hold)
+	{
+		//"hold_scroll()" copies an object from "std::vector<Scrolls> all_scrolls" into "std::vector<Scrolls> held_scrolls"
+		//it is passed a single "Scrolls" object reference
+		held_scrolls.push_back(scroll_to_hold);
+		std::cout << "You hold " << scroll_to_hold.name << "!" << std::endl;
+	}
+
+	//print_scroll handles all the cout for a printed scroll; to be eventually moved to its own displays class
+	void print_scroll(Scrolls& printed_scroll)
+	{
+		std::cout << printed_scroll.name << "\n";
+		std::cout << "max health: +" << printed_scroll.max_health << "\n";
+		std::cout << "attack dmg: +" << printed_scroll.atk_dmg << "\n";
+		std::cout << "-------------------------------" << "\n";
+	}
+
+	void display_all_scrolls()
+	{
+		std::cout << "-------------------------------" << "\n";
+		std::cout << "Here is a list of all scrolls in the game: \n"; //for dev purposes
+		std::cout << "-------------------------------" << "\n";
+		int size = all_scrolls.size();
+		for (int i = 0; i < size; i++)
+		{
+			print_scroll(all_scrolls[i]);
+		}
+	}
+
+	void display_held_scrolls()
+	{
+		std::cout << "-------------------------------" << "\n";
+		std::cout << "Here are your held scrolls: \n"; //for dev purposes
+		std::cout << "-------------------------------" << "\n";
+		int size = held_scrolls.size();
+		for (int i = 0; i < size; i++)
+		{
+			print_scroll(held_scrolls[i]);
+		}
+	}
+
+    //use rng to generate and return a random int (an index number) from 0 to vector size; can be passed to function for scroll drops or holding a scroll
+	int return_random_scroll_index()
+	{
+		int max = (all_scrolls.size() - 1);
+		std::uniform_int_distribution<std::mt19937::result_type> dist6(0, max); // distribution in range (min, max)
+		return dist6(rng);
+	}
+
+	//calls "return_random_scroll_index()" to assign an index for "std::vector<Scrolls> all_scrolls"
+	//then it displays that scroll's info (this item is locally called "all_scrolls[i]"); then it calls "scrolls_are_full()"; 
+	//if no, asks player if they want to hold the scroll; if yes, if yes, calls "choice_hold_scroll()"
+	//if yes, asks player if they want to replace a currently held scroll by calling "choice_replace_scroll()"; if yes, calls "replace_scroll()"
+	void drop_scroll()
+	{
+		int i = return_random_scroll_index();
+		std::cout << "-------------------------------" << "\n";
+		std::cout << "Scroll dropped!\n";  //for dev purposes
+		std::cout << "-------------------------------" << "\n";
+		print_scroll(all_scrolls[i]);
+
+		if (scrolls_are_full() == false)
+		{
+			std::cout << "Scroll slot is available!\n"; //dev
+			choice_hold_scroll(all_scrolls[i]);
+		}
+		else if (scrolls_are_full() == true)
+		{
+			std::cout << "Scrolls are full.\n"; //dev
+			choice_replace_scroll(all_scrolls[i]);
+		}
+		else {}
+	}
+
+    bool scrolls_are_full()
+    {
+        if (held_scrolls.size() > 4)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+	//basic get yes or no char and returns it
+	char get_choice_Y_or_N()
+	{
+		char choice;
+		do
+		{
+			std::cout << "Y or N?" << std::endl;
+			std::cin.get(choice);
+			std::cin.ignore();
+			choice = toupper(choice);
+		} while (choice != 'Y' && choice != 'N');
+		return choice;
+	}
+	
+	//"choice_hold_scroll()" is called by "drop_scroll()"; it then calls "hold_scroll()" if player chooses Yes
+	void choice_hold_scroll(Scrolls& scroll_to_hold)
+	{
+	    std::cout << "Do you wish to hold " << scroll_to_hold.name << "?" << std::endl;
+		char choice = get_choice_Y_or_N();
+
+		if (choice == 'Y')
+		{
+		    clear_screen();
+			hold_scroll(scroll_to_hold);
+		}
+		else
+		{
+		    clear_screen();
+			std::cout << "You choose not to hold" << scroll_to_hold.name << std::endl;
+		}
+	}
+
+	//replaces a currently held scroll with a new one; called by "choice_replace_scroll()"
+	void replace_scroll(int index, Scrolls& scroll_to_hold)
+	{
+	    held_scrolls[index] = scroll_to_hold;
+	}
+
+	//interface for user to choose to replace a currently held scroll with a new one.
+	//includes logic to determine which choices to offer user
+	//If yes, calls "replace_scroll()"; called by drop_scroll when scroll drops and scrolls are full
+    void choice_replace_scroll(Scrolls& scroll_to_hold)
+    {
+        	std::cout << "Which scroll do you wish to replace?\n";
+        	int size = held_scrolls.size();
+        	int i;
+        	char choice;
+        	for (i = 0; i < size; i++)
+        	{
+        	    std::cout << (i + 1) << ". " << held_scrolls[i].name << "\n";
+        	}
+			std::cout << (i + 1) << ". None (discard loot)" << std::endl;
+
+			do
+			{
+				std::cout << "Enter choice.\n";
+				std::cin.get(choice);
+				std::cin.ignore();
+			} 
+			while (choice < '1' || choice > '6');
+
+			if (choice == '1')
+			{
+			    clear_screen();
+				std::cout << "Replaced " << held_scrolls[0].name;
+				std::cout << " with " << scroll_to_hold.name << "." << std::endl;
+
+				replace_scroll(0, scroll_to_hold);
+			}
+			else if (choice == '2')
+			{
+			    clear_screen();
+				std::cout << "Replaced " << held_scrolls[1].name;
+				std::cout << " with " << scroll_to_hold.name << "." << std::endl;
+
+				replace_scroll(1, scroll_to_hold);
+			}
+			else if (choice == '3')
+			{
+			    clear_screen();
+				std::cout << "Replaced " << held_scrolls[2].name;
+				std::cout << " with " << scroll_to_hold.name << "." << std::endl;
+
+				replace_scroll(2, scroll_to_hold);
+			}
+			else if (choice == '4')
+			{
+			    clear_screen();
+				std::cout << "Replaced " << held_scrolls[3].name;
+				std::cout << " with " << scroll_to_hold.name << "." << std::endl;
+
+				replace_scroll(3, scroll_to_hold);
+			}
+			else if (choice == '4')
+			{
+			    clear_screen();
+				std::cout << "Replaced " << held_scrolls[3].name;
+				std::cout << " with " << scroll_to_hold.name << "." << std::endl;
+
+				replace_scroll(3, scroll_to_hold);
+			}
+			else if (choice == '5')
+			{
+			    clear_screen();
+				std::cout << "Replaced " << held_scrolls[4].name;
+				std::cout << " with " << scroll_to_hold.name << "." << std::endl;
+
+				replace_scroll(4, scroll_to_hold);
+			}
+			else if (choice == '6')
+			{
+			    clear_screen();
+				std::cout << "No replacement.\n";
+			}
+    }
+
+	//just passes the number of times to call "drop_scroll()" and then calls it that many times; RNG could be passed to it.
+	void num_drop_scrolls(int num_drops)
+	{
+			for (int i = 0; i < num_drops; i++)
+		{
+			drop_scroll();
+		}
+	}
+	
+	//prints a bunch of new lines to clear the visible screen
+	void clear_screen()
+	{
+	    for(int i = 0; i < 50; i++)
+	    {
+	        std::cout <<"\n";
+	    }
+	}
+};
+
+//main//////////////////////////////////////////
+int main()
+{
+    Scrolls_Class scrl;
+	scrl.assign_all_scrolls();
+	//scrl.display_all_scrolls();
+	scrl.num_drop_scrolls(8);
+	
+	scrl.display_held_scrolls();
+
+	return 0;
+}
+
+void Scrolls_Class::assign_all_scrolls()
+{
+	fill_all_scrolls("Scroll of Fireball"       , 2, 3);
+	fill_all_scrolls("Scroll of Lightning"      , 2, 4);
+	fill_all_scrolls("Scroll of Healing"        , 5, 0);
+	fill_all_scrolls("Scroll of Ice Bolt"       , 6, 0);
+	fill_all_scrolls("Scroll of Poison Nova"    , 3, 0);
+	fill_all_scrolls("Scroll of Clairvoyance"   , 3, 0);
+	fill_all_scrolls("Scroll of Illumination"   , 3, 0);
+	fill_all_scrolls("Scroll of Silencing"      , 3, 0);
+}
