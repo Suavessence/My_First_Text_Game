@@ -1,0 +1,45 @@
+#include <iostream>
+#include <cmath> 
+
+int strongest_even(int n, int m) {
+    
+    int highest_count = 0;
+    int strongest = 0;
+    
+    for(n; n <= m; n++)
+    {
+        if(n % 2 == 0)
+        {    int current_count = 0;
+             int n2 = n;
+             std::cout << "n = " << n << std::endl;
+             
+             while(n2 % 2 == 0)
+             {
+                 n2 = n2/2;
+                 current_count++;
+             }
+     
+             if(current_count > highest_count)
+             {
+                 std::cout << "current_count = " << current_count << std::endl;
+                 highest_count = current_count;
+                 strongest = n;
+             }
+        }
+    }
+    std::cout << "Highest count = " << highest_count << std::endl;
+    std::cout << "Strongest = " << strongest << std::endl;
+    return strongest;
+}
+
+
+int main()
+{
+    std::cout << strongest_even(129, 193) << std::endl;
+}
+/*
+    Assert::That(strongest_even(1, 2), Equals(2));
+    Assert::That(strongest_even(5, 10), Equals(8));
+    Assert::That(strongest_even(48, 56), Equals(48));
+    Assert::That(strongest_even(129, 193), Equals(192));
+*/
