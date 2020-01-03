@@ -1,0 +1,90 @@
+#include <iostream>
+#include <cctype> //isalpha, isdigit
+#include <string> //stoi
+
+std::string calculate(std::string str)
+{
+    int size = str.size();
+    bool first_num_added = false; //tracks if the first number has already been added to total
+    std::string current_str_iteration; //convert char to str, str to int, and added to int_total
+    std::string current_str_subtotal; //stores concatenated current_iterations, to be converted to int and added to int_total
+    char current_operator;
+    int int_total = 0;
+    std::string str_total;
+    
+    for (int i = 0; i < size; i++)
+    {
+        if(isdigit(str[i]))
+        {
+            if(first_num_added == false) //will be tallied here, and added to int_total at first letter
+            {
+                current_str_iteration = str[i];
+                current_str_subtotal += current_str_iteration;  
+            }
+            else if(first_num_added == true && (i < size - 1)) //will be tallied here, and added to int_total at next letter (w/ exception of digits for last num)
+            {
+                current_str_iteration = str[i];
+                current_str_subtotal += current_str_iteration;
+                
+            }
+            else if(first_num_added == true && (i == size - 1)) //the last number/iteration. Will be tallied here, check current_operator, and add to int_total here
+            {
+                current_str_iteration = str[i];
+                current_str_subtotal += current_str_iteration;
+                int_total += std::stoi(current_str_subtotal);
+            }
+        }
+        else if(isalpha(str[i]))
+        {
+            if(first_num_added == false) //if this is the first letter after the first number...
+            {
+                first_num_added = true;
+                int_total += std::stoi(current_str_subtotal);
+                std::cout << "First add to int_total: " << int_total << std::endl;
+                current_str_subtotal = "";
+                
+                if (str[i] == 'p')
+                {
+                    current_operator = 'p';
+                }
+                else if (str[i] == 'm')
+                {
+                    current_operator = 'm';
+                }
+            }
+            else if(first_num_added == true) //if this is the first letter after the second or later numbers...
+            {
+                if (str[i] == 'p')
+                {
+                    current_operator = 'p';
+                    int_total += std::stoi(current_str_subtotal);
+                    std::cout << "Adding to int_total: " << int_total << std::endl;
+                    current_str_subtotal = "";
+                }
+                else if (str[i] == 'm')
+                {
+                    current_operator = 'm';
+                    int_total -= std::stoi(current_str_subtotal);
+                    std::cout << "Subtracting from int_total: " << int_total << std::endl;
+                    current_str_subtotal = "";
+                }
+            }
+        }
+    }
+    str_total = std::to_string(int_total);
+    return str_total;
+}
+
+int main()
+{
+
+    std::cout << "returned: " << calculate("1plus2plus3minus4");
+
+    return 0;
+}
+
+/*
+        Assert::That(calculate("1plus2plus3plus4"), Equals("10"));
+        Assert::That(calculate("1minus2minus3minus4"), Equals("-8"));
+        Assert::That(calculate("1plus2plus3minus4"), Equals("2"));
+*/
