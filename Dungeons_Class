@@ -1,0 +1,37 @@
+#include <iostream>
+#include <vector>
+
+class Dungeons;
+
+struct Rooms
+{
+    private:
+    protected:
+        int num_monsters;
+        int num_chests;
+        int num_traps;
+        
+        Rooms(int constr_num_monsters, int constr_num_chests, int constr_num_traps)
+        {
+            num_monsters = constr_num_monsters;
+            num_chests = constr_num_chests;
+            num_traps = constr_num_traps;
+        }
+    public:
+        friend class Dungeons;
+};
+
+class Dungeons
+{
+    private:
+    protected:
+        std::vector<Rooms> //3 dimensional array
+    public:
+};
+
+int main()
+{
+
+
+    return 0;
+}
