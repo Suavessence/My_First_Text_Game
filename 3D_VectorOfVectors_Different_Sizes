@@ -1,0 +1,111 @@
+#include <vector>
+#include <iostream>
+
+int main()
+{
+
+std::vector<std::vector<int> > floor1;
+
+for(int i = 0; i < 5; i++)
+{
+    std::vector<int> temp;
+    for(int j = 0; j < 5; j++)
+    {
+        temp.push_back(i);
+    }
+    floor1.push_back(temp);
+}
+
+std::vector<std::vector<int> > floor2;
+
+for(int i = 0; i < 7; i++)
+{
+    std::vector<int> temp;
+    for(int j = 0; j < 7; j++)
+    {
+        temp.push_back(i);
+    }
+    floor2.push_back(temp);
+}
+
+std::vector<std::vector<int> > floor3;
+
+for(int i = 0; i < 9; i++)
+{
+    std::vector<int> temp;
+    for(int j = 0; j < 9; j++)
+    {
+        temp.push_back(i);
+    }
+    floor3.push_back(temp);
+}
+
+std::vector<std::vector<int> > floor4;
+
+for(int i = 0; i < 2; i++)
+{
+    std::vector<int> temp;
+    for(int j = 0; j < 2; j++)
+    {
+        temp.push_back(i);
+    }
+    floor3.push_back(temp);
+}
+
+std::vector<std::vector<std::vector<int> > > dungeon;
+dungeon.push_back(floor1);
+dungeon.push_back(floor2);
+dungeon.push_back(floor3);
+dungeon.push_back(floor4);
+
+for(int d = 0; d < dungeon.size(); d++)
+{
+    if(d == 0)
+    {
+        for (int i = 0; i < floor1.size(); i++)
+        {
+            for(int j = 0; j < floor1[i].size(); j++)
+            {
+                std::cout << floor1[i][j];
+            }
+            std::cout << std::endl;
+        }
+    }
+    else if (d == 1)
+    {
+        for (int i = 0; i < floor2.size(); i++)
+        {
+            for(int j = 0; j < floor2[i].size(); j++)
+            {
+                std::cout << floor2[i][j];
+            }
+            std::cout << std::endl;
+        }
+    }
+    else if (d == 2)
+    {
+        for (int i = 0; i < floor3.size(); i++)
+        {
+            for(int j = 0; j < floor3[i].size(); j++)
+            {
+                std::cout << floor3[i][j];
+            }
+            std::cout << std::endl;
+        }
+    }
+    else if (d == 3)
+    {
+        for (int i = 0; i < floor4.size(); i++)
+        {
+            for(int j = 0; j < floor4[i].size(); j++)
+            {
+                std::cout << floor4[i][j];
+            }
+            std::cout << std::endl;
+        }
+    }
+    std::cout << std::endl;
+}
+
+    return 0;
+}
