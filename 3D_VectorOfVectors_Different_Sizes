@@ -1,177 +1,251 @@
+#include "pch.h"
 #include <vector>
 #include <iostream>
+/* 
+To Do:
+- create struct for rooms
+- fill floors with rooms
+- 
+*/
+
+struct Rooms
+{
+	int num_monsters;
+	int num_treasures;
+	int num_traps;
+	int num_doors;
+	
+	Rooms(int constr_monsters, int constr_treasures, int constr_traps, int constr_doors);
+
+};
 
 int main()
 {
-    int floor1_size = 3;
-    int floor2_size = 5;
-    int floor3_size = 7;
-    int floor4_size = 2;
-    int floor5_size = 1;
-    int floor6_size = 8;
-    
-    //create the 2D vectors...aka, the floors//////////////////////////////////
-    
-    std::vector<std::vector<int> > floor1;
-    
-    for(int i = 0; i < floor1_size; i++)
-    {
-        std::vector<int> temp;
-        for(int j = 0; j < floor1_size; j++)
-        {
-            temp.push_back(i);
-        }
-        floor1.push_back(temp);
-    }
-    
-    std::vector<std::vector<int> > floor2;
-    
-    for(int i = 0; i < floor2_size; i++)
-    {
-        std::vector<int> temp;
-        for(int j = 0; j < floor2_size; j++)
-        {
-            temp.push_back(i);
-        }
-        floor2.push_back(temp);
-    }
-    
-    std::vector<std::vector<int> > floor3;
-    
-    for(int i = 0; i < floor3_size; i++)
-    {
-        std::vector<int> temp;
-        for(int j = 0; j < floor3_size; j++)
-        {
-            temp.push_back(i);
-        }
-        floor3.push_back(temp);
-    }
-    
-    std::vector<std::vector<int> > floor4;
-    
-    for(int i = 0; i < floor4_size; i++)
-    {
-        std::vector<int> temp;
-        for(int j = 0; j < floor4_size; j++)
-        {
-            temp.push_back(i);
-        }
-        floor4.push_back(temp);
-    }
-    
-    std::vector<std::vector<int> > floor5;
-    
-    for(int i = 0; i < floor5_size; i++)
-    {
-        std::vector<int> temp;
-        for(int j = 0; j < floor5_size; j++)
-        {
-            temp.push_back(i);
-        }
-        floor5.push_back(temp);
-    }
-    
-    std::vector<std::vector<int> > floor6;
-    for(int i = 0; i < floor6_size; i++)
-    {
-        std::vector<int> temp;
-        for(int j = 0; j < floor6_size; j++)
-        {
-            temp.push_back(i);
-        }
-        floor6.push_back(temp);
-    }
-    
-    //create the 3D vector...aka, the entire dungeon, filled with floors//////////////////////////////////
-    
-    std::vector<std::vector<std::vector<int> > > dungeon;
-    dungeon.push_back(floor1);
-    dungeon.push_back(floor2);
-    dungeon.push_back(floor3);
-    dungeon.push_back(floor4);
-    dungeon.push_back(floor5);
-    dungeon.push_back(floor6);
-    
-    //iterate through the entire dungeon////////////////////////////////////////////////////////////////////
-    
-    for(int d = 0; d < dungeon.size(); d++)
-    {
-        if(d == 0)
-        {
-            std::cout << "Floor 1 | " << floor1_size << std::endl;
-            for (int i = 0; i < floor1.size(); i++)
-            {
-                for(int j = 0; j < floor1[i].size(); j++)
-                {
-                    std::cout << floor1[i][j];
-                }
-                std::cout << std::endl;
-            }
-        }
-        else if (d == 1)
-        {
-            std::cout << "Floor 2 | " << floor2_size << std::endl;
-            for (int i = 0; i < floor2.size(); i++)
-            {
-                for(int j = 0; j < floor2[i].size(); j++)
-                {
-                    std::cout << floor2[i][j];
-                }
-                std::cout << std::endl;
-            }
-        }
-        else if (d == 2)
-        {
-            std::cout << "Floor 3 | " << floor3_size << std::endl;
-            for (int i = 0; i < floor3_size; i++)
-            {
-                for(int j = 0; j < floor3[i].size(); j++)
-                {
-                    std::cout << floor3[i][j];
-                }
-                std::cout << std::endl;
-            }
-        }
-        else if (d == 3)
-        {
-            std::cout << "Floor 4 | " << floor4_size << std::endl;
-            for (int i = 0; i < floor4.size(); i++)
-            {
-                for(int j = 0; j < floor4[i].size(); j++)
-                {
-                    std::cout << floor4[i][j];
-                }
-                std::cout << std::endl;
-            }
-        }
-        else if (d == 4)
-        {
-            std::cout << "Floor 5 | " << floor5_size << std::endl;
-            for (int i = 0; i < floor5.size(); i++)
-            {
-                for(int j = 0; j < floor5[i].size(); j++)
-                {
-                    std::cout << floor5[i][j];
-                }
-                std::cout << std::endl;
-            }
-        }
-        else if (d == 5)
-        {
-            std::cout << "Floor 6 | " << floor6_size << std::endl;
-            for (int i = 0; i < floor6.size(); i++)
-            {
-                for(int j = 0; j < floor6[i].size(); j++)
-                {
-                    std::cout << floor6[i][j];
-                }
-                std::cout << std::endl;
-            }
-        }
-        std::cout << std::endl;
-    }
+	int floor1_size = 2;
+	int floor2_size = 3;
+	int floor3_size = 4;
+	int floor4_size = 1;
+	int floor5_size = 5;
+	int floor6_size = 6;
+	int floor7_size = 7;
+	int floor8_size = 1;
 
-    return 0;
+	//create the 2D vectors...aka, the floors//////////////////////////////////
+
+	std::vector<std::vector<int> > floor1;
+
+	for (int i = 0; i < floor1_size; i++)
+	{
+		std::vector<int> temp;
+		for (int j = 0; j < floor1_size; j++)
+		{
+			temp.push_back(i);
+		}
+		floor1.push_back(temp);
+	}
+
+	std::vector<std::vector<int> > floor2;
+
+	for (int i = 0; i < floor2_size; i++)
+	{
+		std::vector<int> temp;
+		for (int j = 0; j < floor2_size; j++)
+		{
+			temp.push_back(i);
+		}
+		floor2.push_back(temp);
+	}
+
+	std::vector<std::vector<int> > floor3;
+
+	for (int i = 0; i < floor3_size; i++)
+	{
+		std::vector<int> temp;
+		for (int j = 0; j < floor3_size; j++)
+		{
+			temp.push_back(i);
+		}
+		floor3.push_back(temp);
+	}
+
+	std::vector<std::vector<int> > floor4;
+
+	for (int i = 0; i < floor4_size; i++)
+	{
+		std::vector<int> temp;
+		for (int j = 0; j < floor4_size; j++)
+		{
+			temp.push_back(i);
+		}
+		floor4.push_back(temp);
+	}
+
+	std::vector<std::vector<int> > floor5;
+
+	for (int i = 0; i < floor5_size; i++)
+	{
+		std::vector<int> temp;
+		for (int j = 0; j < floor5_size; j++)
+		{
+			temp.push_back(i);
+		}
+		floor5.push_back(temp);
+	}
+
+	std::vector<std::vector<int> > floor6;
+	for (int i = 0; i < floor6_size; i++)
+	{
+		std::vector<int> temp;
+		for (int j = 0; j < floor6_size; j++)
+		{
+			temp.push_back(i);
+		}
+		floor6.push_back(temp);
+	}
+
+	std::vector<std::vector<int> > floor7;
+	for (int i = 0; i < floor7_size; i++)
+	{
+		std::vector<int> temp;
+		for (int j = 0; j < floor7_size; j++)
+		{
+			temp.push_back(i);
+		}
+		floor7.push_back(temp);
+	}
+
+	std::vector<std::vector<int> > floor8;
+	for (int i = 0; i < floor8_size; i++)
+	{
+		std::vector<int> temp;
+		for (int j = 0; j < floor8_size; j++)
+		{
+			temp.push_back(i);
+		}
+		floor8.push_back(temp);
+	}
+	//create the 3D vector...aka, the entire dungeon, filled with floors//////////////////////////////////
+
+	std::vector<std::vector<std::vector<int> > > dungeon;
+	dungeon.push_back(floor1);
+	dungeon.push_back(floor2);
+	dungeon.push_back(floor3);
+	dungeon.push_back(floor4);
+	dungeon.push_back(floor5);
+	dungeon.push_back(floor6);
+	dungeon.push_back(floor7);
+	dungeon.push_back(floor8);
+
+	//iterate through the entire dungeon////////////////////////////////////////////////////////////////////
+
+	for (int d = 0; d < dungeon.size(); d++)
+	{
+		if (d == 0)
+		{
+			std::cout << "Floor 1 | " << floor1_size << std::endl;
+			for (int i = 0; i < floor1.size(); i++)
+			{
+				for (int j = 0; j < floor1[i].size(); j++)
+				{
+					std::cout << floor1[i][j];
+				}
+				std::cout << std::endl;
+			}
+		}
+		else if (d == 1)
+		{
+			std::cout << "Floor 2 | " << floor2_size << std::endl;
+			for (int i = 0; i < floor2.size(); i++)
+			{
+				for (int j = 0; j < floor2[i].size(); j++)
+				{
+					std::cout << floor2[i][j];
+				}
+				std::cout << std::endl;
+			}
+		}
+		else if (d == 2)
+		{
+			std::cout << "Floor 3 | " << floor3_size << std::endl;
+			for (int i = 0; i < floor3_size; i++)
+			{
+				for (int j = 0; j < floor3[i].size(); j++)
+				{
+					std::cout << floor3[i][j];
+				}
+				std::cout << std::endl;
+			}
+		}
+		else if (d == 3)
+		{
+			std::cout << "Floor 4 | " << floor4_size << std::endl;
+			for (int i = 0; i < floor4.size(); i++)
+			{
+				for (int j = 0; j < floor4[i].size(); j++)
+				{
+					std::cout << floor4[i][j];
+				}
+				std::cout << std::endl;
+			}
+		}
+		else if (d == 4)
+		{
+			std::cout << "Floor 5 | " << floor5_size << std::endl;
+			for (int i = 0; i < floor5.size(); i++)
+			{
+				for (int j = 0; j < floor5[i].size(); j++)
+				{
+					std::cout << floor5[i][j];
+				}
+				std::cout << std::endl;
+			}
+		}
+		else if (d == 5)
+		{
+			std::cout << "Floor 6 | " << floor6_size << std::endl;
+			for (int i = 0; i < floor6.size(); i++)
+			{
+				for (int j = 0; j < floor6[i].size(); j++)
+				{
+					std::cout << floor6[i][j];
+				}
+				std::cout << std::endl;
+			}
+		}
+		else if (d == 6)
+		{
+			std::cout << "Floor 7 | " << floor7_size << std::endl;
+			for (int i = 0; i < floor7.size(); i++)
+			{
+				for (int j = 0; j < floor7[i].size(); j++)
+				{
+					std::cout << floor7[i][j];
+				}
+				std::cout << std::endl;
+			}
+		}
+		else if (d == 7)
+		{
+			std::cout << "Floor 8 | " << floor8_size << std::endl;
+			for (int i = 0; i < floor8.size(); i++)
+			{
+				for (int j = 0; j < floor8[i].size(); j++)
+				{
+					std::cout << floor8[i][j];
+				}
+				std::cout << std::endl;
+			}
+		}
+		std::cout << std::endl;
+	}
+
+	return 0;
 }
 
+Rooms::Rooms(int constr_monsters, int constr_treasures, int constr_traps, int constr_doors)
+{
+	num_monsters = constr_monsters;
+	num_treasures = constr_treasures;
+	num_traps = constr_traps;
+	num_doors = constr_doors;
+}
