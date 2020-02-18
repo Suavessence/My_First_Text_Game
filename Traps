@@ -1,0 +1,57 @@
+#include <iostream>
+#include <random>
+//global RNG stuff///////////////////////////////
+std::random_device dev;
+std::mt19937 rng(dev());
+
+class Traps;
+class Players
+{
+    public:
+        int player_health = 10;
+        int player_atk = 10;
+    friend class Traps;
+};
+
+class Traps
+{
+    public:
+    //types of traps ////////////////////////////////////////////////////////////////////////
+    void trap_dmg_player(Players& p)
+    {
+     	p.player_health -= calc_dmg_player();
+    }
+    //void trap_rdc_player_atk(Players& p)
+    //{
+    // 	p.player_atk -= calc_rdc_player_atk(); //ensure this is only temporary
+    //}
+    
+    //Random generators for trap effects////////////////////////////////////////////////////////
+    int calc_dmg_player()
+    {
+        std::uniform_int_distribution<std::mt19937::result_type> dist6(0, 4);
+     	return dist6(rng);
+    }
+    //int calc_rdc_player_atk()
+    //{
+    //  std::uniform_int_distribution<std::mt19937::result_type> dist6(0, 3);
+    // 	return dist6(rng);
+    //}
+ 
+};
+
+int main()
+{
+    Players player;
+    Traps trap;
+    
+    std::cout << "Player Health: " << player.player_health << std::endl;
+    trap.trap_dmg_player(player);
+    std::cout << "Player Health: " << player.player_health << std::endl;
+    trap.trap_dmg_player(player);
+    std::cout << "Player Health: " << player.player_health << std::endl;
+    trap.trap_dmg_player(player);
+    std::cout << "Player Health: " << player.player_health << std::endl;
+    
+    return 0;
+}
