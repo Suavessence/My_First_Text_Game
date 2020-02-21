@@ -39,8 +39,10 @@ public:
 	std::vector<std::vector<Rooms> > floor8;
 
 	std::vector<std::vector<std::vector<Rooms> > > dungeon;
-    void create_room();
-	void fill_floors(Rooms&); //create the 2D vectors...aka, the floors//////////////////////////////////
+	int rnng(int, int);
+    void calc_room_parameters(); //calls rng() to calculate room parameters then calls and passes them to create_rooms()
+    void create_rooms(int, int, int, int); //this creates room objects, designed with Rooms constructors, then calls and passes them to fill_floors()
+	void fill_floors(Rooms& r1, Rooms& r2, Rooms& r3, Rooms& r4, Rooms& r5, Rooms& r6, Rooms& r7, Rooms& r8); //create the 2D vectors...aka, the floors//////////////////////////////////
 	void fill_dungeon(); //create the 3D vector...aka, the entire dungeon, filled with floors
 	void print_dungeon(); //display everything in the dungeon
 };
@@ -48,9 +50,9 @@ public:
 // main /////////////////////////////////////////////////////////////////////////////////////////////////
 int main()
 {
-	Rooms room(1,2,3,4);
+
 	Dungeons dungeon;
-	dungeon.fill_floors(room);
+	dungeon.calc_room_parameters(); 
 	dungeon.fill_dungeon();
 	dungeon.print_dungeon();
 }
@@ -62,18 +64,43 @@ Rooms::Rooms(int constr_monsters, int constr_treasures, int constr_traps, int co
 	num_traps = constr_traps;
 	num_doors = constr_doors;
 }
-void create_room()
+int Dungeons::rnng(int min, int max)
 {
+    std::uniform_int_distribution<std::mt19937::result_type> dist6(min, max); // distribution in range (min_atk, max_atk)
+    return dist6(rng);
+}
+void Dungeons::calc_room_parameters() //calls rng() to calculate room parameters then calls and passes them to create_rooms()
+{
+    int r1_num_monsters = rnng(2,99);
+    int r1_num_treasures = rnng(0,1);
+    int r1_num_traps = 0;
+    int r1_num_doors = rnng(1,4);
+    
+    create_rooms(r1_num_monsters, r1_num_treasures, r1_num_traps, r1_num_doors);
+}
+void Dungeons::create_rooms(int r1_monsters, int r1_treasures, int r1_traps, int r1_doors) //this creates room objects, designed with Rooms constructors, then calls and passes them to fill_floors()
+{
+    //arguments are received from calc_room_parameters(). Go there to set them.
+    Rooms r1(r1_monsters, r1_treasures, r1_traps, r1_doors);
+    Rooms r2(1,2,3,4);
+    Rooms r3(1,2,3,4);
+    Rooms r4(1,2,3,4);
+    Rooms r5(1,2,3,4);
+    Rooms r6(1,2,3,4);
+    Rooms r7(1,2,3,4);
+    Rooms r8(1,2,3,4);
+    
+    fill_floors(r1, r2, r3, r4, r5, r6, r7, r8);
     
 }
-void Dungeons::fill_floors(Rooms& room) //create the 2D vectors...aka, the floors//////////////////////////////////
+void Dungeons::fill_floors(Rooms& r1, Rooms& r2, Rooms& r3, Rooms& r4, Rooms& r5, Rooms& r6, Rooms& r7, Rooms& r8) //create the 2D vectors...aka, the floors//////////////////////////////////
 {
 	for (int i = 0; i < floor1_size; i++)
 	{
 		std::vector<Rooms> temp;
 		for (int j = 0; j < floor1_size; j++)
 		{
-			temp.push_back(room);
+			temp.push_back(r1);
 		}
 		floor1.push_back(temp);
 	}
@@ -83,7 +110,7 @@ void Dungeons::fill_floors(Rooms& room) //create the 2D vectors...aka, the floor
 		std::vector<Rooms> temp;
 		for (int j = 0; j < floor2_size; j++)
 		{
-			temp.push_back(room);
+			temp.push_back(r2);
 		}
 		floor2.push_back(temp);
 	}
@@ -93,7 +120,7 @@ void Dungeons::fill_floors(Rooms& room) //create the 2D vectors...aka, the floor
 		std::vector<Rooms> temp;
 		for (int j = 0; j < floor3_size; j++)
 		{
-			temp.push_back(room);
+			temp.push_back(r3);
 		}
 		floor3.push_back(temp);
 	}
@@ -103,7 +130,7 @@ void Dungeons::fill_floors(Rooms& room) //create the 2D vectors...aka, the floor
 		std::vector<Rooms> temp;
 		for (int j = 0; j < floor4_size; j++)
 		{
-			temp.push_back(room);
+			temp.push_back(r4);
 		}
 		floor4.push_back(temp);
 	}
@@ -113,7 +140,7 @@ void Dungeons::fill_floors(Rooms& room) //create the 2D vectors...aka, the floor
 		std::vector<Rooms> temp;
 		for (int j = 0; j < floor5_size; j++)
 		{
-			temp.push_back(room);
+			temp.push_back(r5);
 		}
 		floor5.push_back(temp);
 	}
@@ -123,7 +150,7 @@ void Dungeons::fill_floors(Rooms& room) //create the 2D vectors...aka, the floor
 		std::vector<Rooms> temp;
 		for (int j = 0; j < floor6_size; j++)
 		{
-			temp.push_back(room);
+			temp.push_back(r6);
 		}
 		floor6.push_back(temp);
 	}
@@ -133,7 +160,7 @@ void Dungeons::fill_floors(Rooms& room) //create the 2D vectors...aka, the floor
 		std::vector<Rooms> temp;
 		for (int j = 0; j < floor7_size; j++)
 		{
-			temp.push_back(room);
+			temp.push_back(r7);
 		}
 		floor7.push_back(temp);
 	}
@@ -143,7 +170,7 @@ void Dungeons::fill_floors(Rooms& room) //create the 2D vectors...aka, the floor
 		std::vector<Rooms> temp;
 		for (int j = 0; j < floor8_size; j++)
 		{
-			temp.push_back(room);
+			temp.push_back(r8);
 		}
 		floor8.push_back(temp);
 	}
