@@ -1,12 +1,7 @@
-//#include "pch.h"
+#include "pch.h"
 #include <vector>
 #include <iostream>
-/* 
-To Do:
-- create struct for rooms
-- fill floors with rooms
-- 
-*/
+#include <random>
 
 struct Rooms
 {
@@ -14,43 +9,44 @@ struct Rooms
 	int num_treasures;
 	int num_traps;
 	int num_doors;
-	
+
 	Rooms(int constr_monsters, int constr_treasures, int constr_traps, int constr_doors);
 };
-
 class Dungeons
 {
-    public:
-        int floor1_size = 2;
-	    int floor2_size = 3;
-	    int floor3_size = 4;
-	    int floor4_size = 1;
-	    int floor5_size = 5;
-	    int floor6_size = 6;
-	    int floor7_size = 7;
-	    int floor8_size = 1;
-	    
-	    std::vector<std::vector<Rooms> > floor1;
-	    std::vector<std::vector<Rooms> > floor2;
-	    std::vector<std::vector<Rooms> > floor3;
-	    std::vector<std::vector<Rooms> > floor4;
-	    std::vector<std::vector<Rooms> > floor5;
-	    std::vector<std::vector<Rooms> > floor6;
-	    std::vector<std::vector<Rooms> > floor7;
-	    std::vector<std::vector<Rooms> > floor8;
-	    
-	    std::vector<std::vector<std::vector<Rooms> > > dungeon;
-	    
-        void fill_floors(); //create the 2D vectors...aka, the floors//////////////////////////////////
-        void fill_dungeon(); //create the 3D vector...aka, the entire dungeon, filled with floors
-        void print_dungeon(); //display everything in the dungeon
+public:
+	int floor1_size = 2;
+	int floor2_size = 3;
+	int floor3_size = 4;
+	int floor4_size = 1;
+	int floor5_size = 5;
+	int floor6_size = 6;
+	int floor7_size = 7;
+	int floor8_size = 1;
+
+	std::vector<std::vector<Rooms> > floor1;
+	std::vector<std::vector<Rooms> > floor2;
+	std::vector<std::vector<Rooms> > floor3;
+	std::vector<std::vector<Rooms> > floor4;
+	std::vector<std::vector<Rooms> > floor5;
+	std::vector<std::vector<Rooms> > floor6;
+	std::vector<std::vector<Rooms> > floor7;
+	std::vector<std::vector<Rooms> > floor8;
+
+	std::vector<std::vector<std::vector<Rooms> > > dungeon;
+
+	void fill_floors(Rooms&); //create the 2D vectors...aka, the floors//////////////////////////////////
+	void fill_dungeon(); //create the 3D vector...aka, the entire dungeon, filled with floors
+	void print_dungeon(); //display everything in the dungeon
 };
 
 int main()
 {
-    
-
-	
+	Rooms room(1,2,3,4);
+	Dungeons dungeon;
+	dungeon.fill_floors(room);
+	dungeon.fill_dungeon();
+	dungeon.print_dungeon();
 }
 
 Rooms::Rooms(int constr_monsters, int constr_treasures, int constr_traps, int constr_doors)
@@ -60,96 +56,95 @@ Rooms::Rooms(int constr_monsters, int constr_treasures, int constr_traps, int co
 	num_traps = constr_traps;
 	num_doors = constr_doors;
 }
-
-void Dungeons::fill_floors() //create the 2D vectors...aka, the floors//////////////////////////////////
+void Dungeons::fill_floors(Rooms& room) //create the 2D vectors...aka, the floors//////////////////////////////////
 {
-    for (int i = 0; i < floor1_size; i++)
+	for (int i = 0; i < floor1_size; i++)
 	{
 		std::vector<Rooms> temp;
 		for (int j = 0; j < floor1_size; j++)
 		{
-			temp.push_back(i);
+			temp.push_back(room);
 		}
 		floor1.push_back(temp);
 	}
 
-	
+
 
 	for (int i = 0; i < floor2_size; i++)
 	{
 		std::vector<Rooms> temp;
 		for (int j = 0; j < floor2_size; j++)
 		{
-			temp.push_back(i);
+			temp.push_back(room);
 		}
 		floor2.push_back(temp);
 	}
 
-	
+
 
 	for (int i = 0; i < floor3_size; i++)
 	{
 		std::vector<Rooms> temp;
 		for (int j = 0; j < floor3_size; j++)
 		{
-			temp.push_back(i);
+			temp.push_back(room);
 		}
 		floor3.push_back(temp);
 	}
 
-	
+
 
 	for (int i = 0; i < floor4_size; i++)
 	{
 		std::vector<Rooms> temp;
 		for (int j = 0; j < floor4_size; j++)
 		{
-			temp.push_back(i);
+			temp.push_back(room);
 		}
 		floor4.push_back(temp);
 	}
 
-	
+
 
 	for (int i = 0; i < floor5_size; i++)
 	{
 		std::vector<Rooms> temp;
 		for (int j = 0; j < floor5_size; j++)
 		{
-			temp.push_back(i);
+			temp.push_back(room);
 		}
 		floor5.push_back(temp);
 	}
 
-	
+
 	for (int i = 0; i < floor6_size; i++)
 	{
 		std::vector<Rooms> temp;
 		for (int j = 0; j < floor6_size; j++)
 		{
-			temp.push_back(i);
+			temp.push_back(room);
 		}
 		floor6.push_back(temp);
 	}
 
-	
+
 	for (int i = 0; i < floor7_size; i++)
 	{
 		std::vector<Rooms> temp;
 		for (int j = 0; j < floor7_size; j++)
 		{
-			temp.push_back(i);
+			temp.push_back(room);
 		}
 		floor7.push_back(temp);
 	}
 
-	
+
 	for (int i = 0; i < floor8_size; i++)
 	{
 		std::vector<Rooms> temp;
 		for (int j = 0; j < floor8_size; j++)
 		{
-			temp.push_back(i);
+			temp.push_back(room);
 		}
 		floor8.push_back(temp);
 	}
@@ -176,7 +171,7 @@ void Dungeons::print_dungeon() //iterate through the entire dungeon////
 			{
 				for (int j = 0; j < floor1[i].size(); j++)
 				{
-					std::cout << floor1[i][j];
+					std::cout << floor1[i][j].num_monsters;
 				}
 				std::cout << std::endl;
 			}
@@ -188,7 +183,7 @@ void Dungeons::print_dungeon() //iterate through the entire dungeon////
 			{
 				for (int j = 0; j < floor2[i].size(); j++)
 				{
-					std::cout << floor2[i][j];
+					std::cout << floor2[i][j].num_monsters;
 				}
 				std::cout << std::endl;
 			}
@@ -200,7 +195,7 @@ void Dungeons::print_dungeon() //iterate through the entire dungeon////
 			{
 				for (int j = 0; j < floor3[i].size(); j++)
 				{
-					std::cout << floor3[i][j];
+					std::cout << floor3[i][j].num_monsters;
 				}
 				std::cout << std::endl;
 			}
@@ -212,7 +207,7 @@ void Dungeons::print_dungeon() //iterate through the entire dungeon////
 			{
 				for (int j = 0; j < floor4[i].size(); j++)
 				{
-					std::cout << floor4[i][j];
+					std::cout << floor4[i][j].num_monsters;
 				}
 				std::cout << std::endl;
 			}
@@ -224,7 +219,7 @@ void Dungeons::print_dungeon() //iterate through the entire dungeon////
 			{
 				for (int j = 0; j < floor5[i].size(); j++)
 				{
-					std::cout << floor5[i][j];
+					std::cout << floor5[i][j].num_monsters;
 				}
 				std::cout << std::endl;
 			}
@@ -236,7 +231,7 @@ void Dungeons::print_dungeon() //iterate through the entire dungeon////
 			{
 				for (int j = 0; j < floor6[i].size(); j++)
 				{
-					std::cout << floor6[i][j];
+					std::cout << floor6[i][j].num_monsters;
 				}
 				std::cout << std::endl;
 			}
@@ -248,7 +243,7 @@ void Dungeons::print_dungeon() //iterate through the entire dungeon////
 			{
 				for (int j = 0; j < floor7[i].size(); j++)
 				{
-					std::cout << floor7[i][j];
+					std::cout << floor7[i][j].num_monsters;
 				}
 				std::cout << std::endl;
 			}
@@ -260,7 +255,7 @@ void Dungeons::print_dungeon() //iterate through the entire dungeon////
 			{
 				for (int j = 0; j < floor8[i].size(); j++)
 				{
-					std::cout << floor8[i][j];
+					std::cout << floor8[i][j].num_monsters;
 				}
 				std::cout << std::endl;
 			}
