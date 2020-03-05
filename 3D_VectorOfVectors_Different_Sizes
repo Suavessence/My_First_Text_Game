@@ -28,6 +28,20 @@ public:
 	int floor6_size = 6;
 	int floor7_size = 7;
 	int floor8_size = 1;
+	
+	int current_dim;
+	int current_row;
+	int current_col;
+	
+	void set_initial_dim();
+	void set_initial_row();
+	void set_initial_col();
+	
+	void move_room_up();
+	void move_room_down();
+	void move_room_left();
+	void move_room_right();
+	void move_floor_down();
 
 	std::vector<std::vector<Rooms> > floor1;
 	std::vector<std::vector<Rooms> > floor2;
@@ -39,10 +53,12 @@ public:
 	std::vector<std::vector<Rooms> > floor8;
 
 	std::vector<std::vector<std::vector<Rooms> > > dungeon;
-	int RNG(int, int);
-	void fill_floors(/*Rooms& r1, Rooms& r2, Rooms& r3, Rooms& r4, Rooms& r5, Rooms& r6, Rooms& r7, Rooms& r8*/); //create the 2D vectors...aka, the floors//////////////////////////////////
+	int RNG(int min, int max);
+	void fill_floors(); //create the 2D vectors...aka, the floors//////////////////////////////////
 	void fill_dungeon(); //create the 3D vector...aka, the entire dungeon, filled with floors
 	void print_dungeon(); //display everything in the dungeon
+	void print_current_room(int dim, int row, int col); //display the variable values for the current room
+	void remove_monster(int dim, int row, int col);
 };
 
 // main /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -52,8 +68,23 @@ int main()
 	dungeon.fill_floors();
 	dungeon.fill_dungeon();
 	dungeon.print_dungeon();
+	dungeon.set_initial_dim();
+	dungeon.set_initial_row();
+	dungeon.set_initial_col();
+	dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	dungeon.remove_monster(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	dungeon.remove_monster(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
 }
-// definitions /////////////////////////////////////////////////////////////////////////////////////////////
+// RNG ///////////////////////////////////////////////////////////////////////////////////////////////
+int Dungeons::RNG(int min, int max)
+{
+	std::uniform_int_distribution<std::mt19937::result_type> dist6(min, max); // distribution in range (min_atk, max_atk)
+	return dist6(rng);
+}
+
+//functions to build the dungeon//////////////////////////////////////////////////////////////////////
 Rooms::Rooms(int constr_monsters, int constr_treasures, int constr_traps, int constr_doors)
 {
 	num_monsters = constr_monsters;
@@ -61,11 +92,7 @@ Rooms::Rooms(int constr_monsters, int constr_treasures, int constr_traps, int co
 	num_traps = constr_traps;
 	num_doors = constr_doors;
 }
-int Dungeons::RNG(int min, int max)
-{
-	std::uniform_int_distribution<std::mt19937::result_type> dist6(min, max); // distribution in range (min_atk, max_atk)
-	return dist6(rng);
-}
+
 void Dungeons::fill_floors() //create the 2D vectors...aka, the floors//////////////////////////////////
 {
 	for (int i = 0; i < floor1_size; i++)
@@ -167,6 +194,8 @@ void Dungeons::fill_dungeon()//create the 3D vector...aka, the entire dungeon, f
 	dungeon.push_back(floor7);
 	dungeon.push_back(floor8);
 }
+
+//functions to print stuff///////////////////////////////////////////////////////////////////////////
 void Dungeons::print_dungeon() //iterate through the entire dungeon////
 {
 	for (int d = 0; d < dungeon.size(); d++)
@@ -277,4 +306,53 @@ void Dungeons::print_dungeon() //iterate through the entire dungeon////
 		}
 		std::cout << std::endl;
 	}
+}
+
+void Dungeons::print_current_room(int dim, int row, int col)
+{
+    //std::cout << "dungeon[dim][row][col].num_monsters\n" << std::endl;
+    //std::cout << current_dim << " " << current_row << " " << current_col << std::endl;
+    std::cout << dungeon[dim][row][col].num_monsters << std::endl;
+}
+
+//functions to set initial location/////////////////////////////////////////////////////////
+void Dungeons::set_initial_dim()
+{
+    current_dim = 0;
+}
+void Dungeons::set_initial_row()
+{
+    current_row = 0;
+}
+void Dungeons::set_initial_col()
+{
+    current_col = 0;
+}
+
+//functions to change current location////////////////////////////////////
+void Dungeons::move_room_up()
+{
+    current_row--;
+}
+void Dungeons::move_room_down()
+{
+    current_row++;
+}
+void Dungeons::move_room_left()
+{
+    current_col--;
+}
+void Dungeons::move_room_right()
+{
+    current_col++;
+}
+void Dungeons::move_floor_down()
+{
+    current_dim++;
+}
+
+//functions to manipulate room variables///////////////////////////////////////////////////////////////////////////////////
+void Dungeons::remove_monster(int dim, int row, int col)
+{
+    dungeon[dim][row][col].num_monsters--;
 }
