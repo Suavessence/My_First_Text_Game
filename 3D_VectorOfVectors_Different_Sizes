@@ -71,11 +71,66 @@ int main()
 	dungeon.set_initial_dim();
 	dungeon.set_initial_row();
 	dungeon.set_initial_col();
-	dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	dungeon.remove_monster(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	dungeon.remove_monster(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	
+	//dungeon.remove_monster(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	//dungeon.remove_monster(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	//
+	//dungeon.move_room_right();
+	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	//
+	//dungeon.move_room_down();
+	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	//
+	//dungeon.move_room_left();
+	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	//
+	//dungeon.move_room_up();
+	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	//
+	//dungeon.move_floor_down();
+	//
+	//std::cout << "next\n";
+	//
+	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	//
+	//dungeon.move_room_right();
+	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	//
+	//dungeon.move_room_down();
+	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	//
+	//dungeon.move_room_left();
+	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	//
+	//dungeon.move_room_up();
+	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	//
+	//dungeon.move_floor_down();
+	//
+	//
+	//std::cout << "next\n";
+	//
+	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	//
+	//dungeon.move_room_right();
+	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	//
+	//dungeon.move_room_down();
+	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	//
+	//dungeon.move_room_left();
+	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	//
+	//dungeon.move_room_up();
+	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	//
+	//std::cout << "next\n";
+	//
+	//dungeon.move_floor_down();
+	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
 }
 // RNG ///////////////////////////////////////////////////////////////////////////////////////////////
 int Dungeons::RNG(int min, int max)
@@ -349,6 +404,8 @@ void Dungeons::move_room_right()
 void Dungeons::move_floor_down()
 {
     current_dim++;
+    current_row = 0; //doing this to ensure even a 1x1 floor functions properly. For larger floors, this will eliminate the randomness of the starting room.
+    current_col = 0; //doing this to ensure even a 1x1 floor functions properly. For larger floors, this will eliminate the randomness of the starting room.
 }
 
 //functions to manipulate room variables///////////////////////////////////////////////////////////////////////////////////
