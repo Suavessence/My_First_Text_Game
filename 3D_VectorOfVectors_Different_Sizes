@@ -1,7 +1,8 @@
 //#include "pch.h"
 #include <vector>
 #include <iostream>
-#include <random>
+#include <random> //for RNG
+#include <cctype> //for toupper()
 
 //global RNG stuff//////////////////////////////////////////////////////////////////////////
 std::random_device dev;
@@ -29,19 +30,23 @@ public:
 	int floor7_size = 7;
 	int floor8_size = 1;
 	
-	int current_dim;
-	int current_row;
-	int current_col;
+	int current_dim; //for current location
+	int current_row; //for current location
+	int current_col; //for current location
 	
-	void set_initial_dim();
-	void set_initial_row();
-	void set_initial_col();
+	void set_initial_dim(); //for starting location
+	void set_initial_row(); //for starting location
+	void set_initial_col(); //for starting location
 	
-	void move_room_up();
-	void move_room_down();
-	void move_room_left();
-	void move_room_right();
-	void move_floor_down();
+	void move_room_up();     //adjusts current_row by -1 
+	void move_room_down();   //adjusts current_row by +1 
+	void move_room_left();   //adjusts current_col by -1
+	void move_room_right();  //adjusts current_col by +1 
+	void move_floor_down();  //adjusts current_dim by +1; not intended to have a mirrored move_floor_up member
+	
+	void print_menu_4_directions();
+	char get_choice_1_2_3_4();
+    void change_current_location_switch(char choice);
 
 	std::vector<std::vector<Rooms> > floor1;
 	std::vector<std::vector<Rooms> > floor2;
@@ -72,65 +77,9 @@ int main()
 	dungeon.set_initial_row();
 	dungeon.set_initial_col();
 	
-	//dungeon.remove_monster(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	//dungeon.remove_monster(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	//
-	//dungeon.move_room_right();
-	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	//
-	//dungeon.move_room_down();
-	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	//
-	//dungeon.move_room_left();
-	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	//
-	//dungeon.move_room_up();
-	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	//
-	//dungeon.move_floor_down();
-	//
-	//std::cout << "next\n";
-	//
-	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	//
-	//dungeon.move_room_right();
-	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	//
-	//dungeon.move_room_down();
-	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	//
-	//dungeon.move_room_left();
-	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	//
-	//dungeon.move_room_up();
-	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	//
-	//dungeon.move_floor_down();
-	//
-	//
-	//std::cout << "next\n";
-	//
-	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	//
-	//dungeon.move_room_right();
-	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	//
-	//dungeon.move_room_down();
-	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	//
-	//dungeon.move_room_left();
-	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	//
-	//dungeon.move_room_up();
-	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
-	//
-	//std::cout << "next\n";
-	//
-	//dungeon.move_floor_down();
-	//dungeon.print_current_room(dungeon.current_dim, dungeon.current_row, dungeon.current_col);
+	dungeon.print_menu_4_directions();
+	dungeon.change_current_location_switch(dungeon.get_choice_1_2_3_4());
+	
 }
 // RNG ///////////////////////////////////////////////////////////////////////////////////////////////
 int Dungeons::RNG(int min, int max)
@@ -365,8 +314,6 @@ void Dungeons::print_dungeon() //iterate through the entire dungeon////
 
 void Dungeons::print_current_room(int dim, int row, int col)
 {
-    //std::cout << "dungeon[dim][row][col].num_monsters\n" << std::endl;
-    //std::cout << current_dim << " " << current_row << " " << current_col << std::endl;
     std::cout << dungeon[dim][row][col].num_monsters << std::endl;
 }
 
@@ -406,6 +353,45 @@ void Dungeons::move_floor_down()
     current_dim++;
     current_row = 0; //doing this to ensure even a 1x1 floor functions properly. For larger floors, this will eliminate the randomness of the starting room.
     current_col = 0; //doing this to ensure even a 1x1 floor functions properly. For larger floors, this will eliminate the randomness of the starting room.
+}
+void Dungeons::print_menu_4_directions()
+{
+    std::cout << "Select an option: \n\n";
+    std::cout << "1. Move up 1 room.\n";
+    std::cout << "2. Move down 1 room.\n";
+    std::cout << "3. Move left 1 room.\n";
+    std::cout << "4. Move right 1 room.\n\n";
+}
+char Dungeons::get_choice_1_2_3_4()
+{
+    char choice;
+    
+    do
+    {
+        std::cin.get(choice);
+        std::cin.ignore();
+    }
+    while(choice != '1'|| choice != '2' || choice != '3' || choice != '4');
+    return choice;
+}
+void Dungeons::change_current_location_switch(char choice)
+{
+    switch (choice)
+    {
+        case '1': move_room_up();
+        std::cout << "Case 1\n";
+                  break;
+        case '2': move_room_down();
+        std::cout << "Case 2\n";
+                  break;
+        case '3': move_room_left();
+        std::cout << "Case 3\n";
+                  break;
+        case '4': move_room_right();
+        std::cout << "Case 4\n";
+                  break;
+        default:  std::cout << "Switch default break. No case matched." << std::endl;
+    }
 }
 
 //functions to manipulate room variables///////////////////////////////////////////////////////////////////////////////////
