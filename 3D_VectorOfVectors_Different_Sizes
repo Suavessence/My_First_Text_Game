@@ -29,24 +29,24 @@ public:
 	int floor6_size = 6;
 	int floor7_size = 7;
 	int floor8_size = 1;
-	
+
 	int current_dim; //for current location
 	int current_row; //for current location
 	int current_col; //for current location
-	
+
 	void set_initial_dim(); //for starting location
 	void set_initial_row(); //for starting location
 	void set_initial_col(); //for starting location
-	
+
 	void move_room_up();     //adjusts current_row by -1 
 	void move_room_down();   //adjusts current_row by +1 
 	void move_room_left();   //adjusts current_col by -1
 	void move_room_right();  //adjusts current_col by +1 
 	void move_floor_down();  //adjusts current_dim by +1; not intended to have a mirrored move_floor_up member
-	
+
 	void print_menu_4_directions();
 	char get_choice_1_2_3_4();
-    void change_current_location_switch(char choice);
+	void change_current_location_switch(char choice);
 
 	std::vector<std::vector<Rooms> > floor1;
 	std::vector<std::vector<Rooms> > floor2;
@@ -76,10 +76,10 @@ int main()
 	dungeon.set_initial_dim();
 	dungeon.set_initial_row();
 	dungeon.set_initial_col();
-	
+
 	dungeon.print_menu_4_directions();
 	dungeon.change_current_location_switch(dungeon.get_choice_1_2_3_4());
-	
+
 }
 // RNG ///////////////////////////////////////////////////////////////////////////////////////////////
 int Dungeons::RNG(int min, int max)
@@ -104,7 +104,7 @@ void Dungeons::fill_floors() //create the 2D vectors...aka, the floors//////////
 		std::vector<Rooms> temp;
 		for (int j = 0; j < floor1_size; j++)
 		{
-			Rooms room(RNG(0,9), RNG(2,4), RNG(3,5), RNG(0,1)); //get random numbers for room variables
+			Rooms room(RNG(0, 9), RNG(2, 4), RNG(3, 5), RNG(0, 1)); //get random numbers for room variables
 			temp.push_back(room);
 		}
 		floor1.push_back(temp);
@@ -314,88 +314,93 @@ void Dungeons::print_dungeon() //iterate through the entire dungeon////
 
 void Dungeons::print_current_room(int dim, int row, int col)
 {
-    std::cout << dungeon[dim][row][col].num_monsters << std::endl;
+	std::cout << dungeon[dim][row][col].num_monsters << std::endl;
 }
 
 //functions to set initial location/////////////////////////////////////////////////////////
 void Dungeons::set_initial_dim()
 {
-    current_dim = 0;
+	current_dim = 0;
 }
 void Dungeons::set_initial_row()
 {
-    current_row = 0;
+	current_row = 0;
 }
 void Dungeons::set_initial_col()
 {
-    current_col = 0;
+	current_col = 0;
 }
 
 //functions to change current location////////////////////////////////////
 void Dungeons::move_room_up()
 {
-    current_row--;
+	current_row--;
 }
 void Dungeons::move_room_down()
 {
-    current_row++;
+	current_row++;
 }
 void Dungeons::move_room_left()
 {
-    current_col--;
+	current_col--;
 }
 void Dungeons::move_room_right()
 {
-    current_col++;
+	current_col++;
 }
 void Dungeons::move_floor_down()
 {
-    current_dim++;
-    current_row = 0; //doing this to ensure even a 1x1 floor functions properly. For larger floors, this will eliminate the randomness of the starting room.
-    current_col = 0; //doing this to ensure even a 1x1 floor functions properly. For larger floors, this will eliminate the randomness of the starting room.
+	current_dim++;
+	current_row = 0; //doing this to ensure even a 1x1 floor functions properly. For larger floors, this will eliminate the randomness of the starting room.
+	current_col = 0; //doing this to ensure even a 1x1 floor functions properly. For larger floors, this will eliminate the randomness of the starting room.
 }
 void Dungeons::print_menu_4_directions()
 {
-    std::cout << "Select an option: \n\n";
-    std::cout << "1. Move up 1 room.\n";
-    std::cout << "2. Move down 1 room.\n";
-    std::cout << "3. Move left 1 room.\n";
-    std::cout << "4. Move right 1 room.\n\n";
+	std::cout << "Select an option: \n\n";
+	std::cout << "1. Move up 1 room.\n";
+	std::cout << "2. Move down 1 room.\n";
+	std::cout << "3. Move left 1 room.\n";
+	std::cout << "4. Move right 1 room.\n\n";
 }
 char Dungeons::get_choice_1_2_3_4()
 {
-    char choice;
-    
-    do
-    {
-        std::cin.get(choice);
-        std::cin.ignore();
-    }
-    while(choice != '1'|| choice != '2' || choice != '3' || choice != '4');
-    return choice;
+	char choice;
+
+	do
+	{
+		std::cin.get(choice);
+		std::cin.ignore();
+		if (choice != '1' && choice != '2' && choice != '3' && choice != '4')
+		{
+			std::cout << "Enter 1, 2, 3, or 4.\n";
+		}
+	} 
+	while (choice != '1' && choice != '2' && choice != '3' && choice != '4');
+	return choice;
 }
 void Dungeons::change_current_location_switch(char choice)
 {
-    switch (choice)
-    {
-        case '1': move_room_up();
-        std::cout << "Case 1\n";
-                  break;
-        case '2': move_room_down();
-        std::cout << "Case 2\n";
-                  break;
-        case '3': move_room_left();
-        std::cout << "Case 3\n";
-                  break;
-        case '4': move_room_right();
-        std::cout << "Case 4\n";
-                  break;
-        default:  std::cout << "Switch default break. No case matched." << std::endl;
-    }
+	std::cout << "switch" << std::endl;
+	switch (choice)
+	{
+	case '1': move_room_up();
+		      std::cout << "Case 1\n";
+		      break;
+	case '2': move_room_down();
+			  std::cout << "Case 2\n";
+			  break;
+	case '3': move_room_left();
+			  std::cout << "Case 3\n";
+			  break;
+	case '4': move_room_right();
+			  std::cout << "Case 4\n";
+			  break;
+	default:  std::cout << "Switch default break. No case matched." << std::endl;
+	}
 }
 
 //functions to manipulate room variables///////////////////////////////////////////////////////////////////////////////////
 void Dungeons::remove_monster(int dim, int row, int col)
 {
-    dungeon[dim][row][col].num_monsters--;
+	dungeon[dim][row][col].num_monsters--;
 }
