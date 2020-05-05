@@ -62,7 +62,7 @@ public:
 	void fill_floors(); //create the 2D vectors...aka, the floors//////////////////////////////////
 	void fill_dungeon(); //create the 3D vector...aka, the entire dungeon, filled with floors
 	void print_dungeon(); //display everything in the dungeon
-	void print_current_room(int dim, int row, int col); //display the variable values for the current room
+	void print_current_room(); //display the variable values for the current room
 	void remove_monster(int dim, int row, int col);
 };
 
@@ -76,9 +76,27 @@ int main()
 	dungeon.set_initial_dim();
 	dungeon.set_initial_row();
 	dungeon.set_initial_col();
+	dungeon.print_current_room();
 
 	dungeon.print_menu_4_directions();
 	dungeon.change_current_location_switch(dungeon.get_choice_1_2_3_4());
+	dungeon.print_current_room();
+	
+	dungeon.print_menu_4_directions();
+	dungeon.change_current_location_switch(dungeon.get_choice_1_2_3_4());
+	dungeon.print_current_room();
+	
+	dungeon.print_menu_4_directions();
+	dungeon.change_current_location_switch(dungeon.get_choice_1_2_3_4());
+	dungeon.print_current_room();
+	
+	dungeon.print_menu_4_directions();
+	dungeon.change_current_location_switch(dungeon.get_choice_1_2_3_4());
+	dungeon.print_current_room();
+	
+	dungeon.print_menu_4_directions();
+	dungeon.change_current_location_switch(dungeon.get_choice_1_2_3_4());
+	dungeon.print_current_room();
 
 }
 // RNG ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -312,9 +330,10 @@ void Dungeons::print_dungeon() //iterate through the entire dungeon////
 	}
 }
 
-void Dungeons::print_current_room(int dim, int row, int col)
+void Dungeons::print_current_room()
 {
-	std::cout << dungeon[dim][row][col].num_monsters << std::endl;
+    std::cout << "Floor: " << current_dim << ". Row: " << current_row << ". Column: " << current_col << std::endl;
+	std::cout << "Number of monsters in the current room: " << dungeon[current_dim][current_row][current_col].num_monsters << std::endl;
 }
 
 //functions to set initial location/////////////////////////////////////////////////////////
