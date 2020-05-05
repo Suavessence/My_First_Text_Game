@@ -45,7 +45,7 @@ public:
 	void move_floor_down();  //adjusts current_dim by +1; not intended to have a mirrored move_floor_up member
 
 	void print_menu_4_directions();
-	char get_choice_1_2_3_4();
+	char get_choice_1_2_3_4_5();
 	void change_current_location_switch(char choice);
 
 	std::vector<std::vector<Rooms> > floor1;
@@ -79,23 +79,23 @@ int main()
 	dungeon.print_current_room();
 
 	dungeon.print_menu_4_directions();
-	dungeon.change_current_location_switch(dungeon.get_choice_1_2_3_4());
+	dungeon.change_current_location_switch(dungeon.get_choice_1_2_3_4_5());
 	dungeon.print_current_room();
 	
 	dungeon.print_menu_4_directions();
-	dungeon.change_current_location_switch(dungeon.get_choice_1_2_3_4());
+	dungeon.change_current_location_switch(dungeon.get_choice_1_2_3_4_5());
 	dungeon.print_current_room();
 	
 	dungeon.print_menu_4_directions();
-	dungeon.change_current_location_switch(dungeon.get_choice_1_2_3_4());
+	dungeon.change_current_location_switch(dungeon.get_choice_1_2_3_4_5());
 	dungeon.print_current_room();
 	
 	dungeon.print_menu_4_directions();
-	dungeon.change_current_location_switch(dungeon.get_choice_1_2_3_4());
+	dungeon.change_current_location_switch(dungeon.get_choice_1_2_3_4_5());
 	dungeon.print_current_room();
 	
 	dungeon.print_menu_4_directions();
-	dungeon.change_current_location_switch(dungeon.get_choice_1_2_3_4());
+	dungeon.change_current_location_switch(dungeon.get_choice_1_2_3_4_5());
 	dungeon.print_current_room();
 
 }
@@ -379,9 +379,10 @@ void Dungeons::print_menu_4_directions()
 	std::cout << "1. Move up 1 room.\n";
 	std::cout << "2. Move down 1 room.\n";
 	std::cout << "3. Move left 1 room.\n";
-	std::cout << "4. Move right 1 room.\n\n";
+	std::cout << "4. Move right 1 room.\n";
+	std::cout << "5. Move down 1 floor.\n";
 }
-char Dungeons::get_choice_1_2_3_4()
+char Dungeons::get_choice_1_2_3_4_5()
 {
 	char choice;
 
@@ -389,12 +390,12 @@ char Dungeons::get_choice_1_2_3_4()
 	{
 		std::cin.get(choice);
 		std::cin.ignore();
-		if (choice != '1' && choice != '2' && choice != '3' && choice != '4')
+		if (choice != '1' && choice != '2' && choice != '3' && choice != '4' && choice != '5')
 		{
-			std::cout << "Enter 1, 2, 3, or 4.\n";
+			std::cout << "Enter a number from 1 - 5.\n";
 		}
 	} 
-	while (choice != '1' && choice != '2' && choice != '3' && choice != '4');
+	while (choice != '1' && choice != '2' && choice != '3' && choice != '4' && choice != '5');
 	return choice;
 }
 void Dungeons::change_current_location_switch(char choice)
@@ -414,6 +415,10 @@ void Dungeons::change_current_location_switch(char choice)
 	case '4': move_room_right();
 			  std::cout << "Case 4\n";
 			  break;
+	case '5': move_floor_down();
+	          std::cout << "Case 5\n";
+	          break;
+	          
 	default:  std::cout << "Switch default break. No case matched." << std::endl;
 	}
 }
